@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using Management.Core.Interfaces;
 using Management.Core.Models;
-using Management.Core.Validators;
 
 namespace Management.Core.Services;
 

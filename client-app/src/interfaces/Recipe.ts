@@ -16,7 +16,7 @@ export interface RecipeAdd {
   description: string;
   ingredients: string[];
   instructions: string;
-  photo: string;
+  imageFileName: string | null;
   isPublished: boolean;
 }
 

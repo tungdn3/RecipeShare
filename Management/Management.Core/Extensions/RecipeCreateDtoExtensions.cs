@@ -13,7 +13,7 @@ public static class RecipeCreateDtoExtensions
             CategoryId = dto.CategoryId,
             CookingMinutes = dto.CookingMinutes,
             Description = dto.Description,
-            ImageUrl = dto.ImageUrl,
+            ImageFileName = dto.ImageFileName,
             Ingredients = dto.Ingredients,
             Instructions = dto.Instructions,
             IsPublished = dto.IsPublished,

@@ -51,6 +51,7 @@ export const useMyRecipesStore = defineStore('my-recipes', () => {
     if (!auth0) {
       return;
     }
+
     const accessToken = await auth0.getAccessTokenSilently();
     const response = await fetch('https://localhost:7000/management/recipes', {
       method: 'POST',
@@ -60,7 +61,7 @@ export const useMyRecipesStore = defineStore('my-recipes', () => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log('---------- save', response);
+
     if (!response.ok) {
       throw new Error('Failed to save recipe.');
     } else {

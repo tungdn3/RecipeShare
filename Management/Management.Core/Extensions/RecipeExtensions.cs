@@ -5,7 +5,7 @@ namespace Management.Core.Extensions;
 
 public static class RecipeExtensions
 {
-    public static RecipeDto ToDto(this Recipe recipe)
+    public static RecipeDto ToDto(this Recipe recipe, string? imageUrl)
     {
         return new RecipeDto
         {
@@ -14,7 +14,7 @@ public static class RecipeExtensions
             CookingMinutes = recipe.CookingMinutes,
             CreatedAt = recipe.CreatedAt,
             Description = recipe.Description,
-            ImageUrl = recipe.ImageUrl,
+            ImageUrl = imageUrl,
             Ingredients = recipe.Ingredients,
             Instructions = recipe.Instructions,
             IsDeleted = recipe.IsDeleted,

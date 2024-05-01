@@ -31,7 +31,7 @@ public static class DbInitializer
                 CookingMinutes = 5,
                 CreatedAt = DateTime.UtcNow,
                 Description = "Bạn đang muốn tìm một công thức làm nước ép táo ngon hay bạn đang muốn kết hợp táo với các loại rau quả khác để tạo nên một ly nước ép trái cây thơm ngon, vị lạ miệng hơn thì bài viết này đang dành cho bạn đấy. Còn ngại gì mà không vào bếp cùng mình nào.",
-                ImageUrl = "https://cms-prod.s3-sgn09.fptcloud.com/loi_ich_cua_nuoc_ep_cam_ca_rot_doi_voi_suc_khoe_4_6d5af95d43.jpeg",
+                ImageFileName = "gyy31mol.jpg",
                 Ingredients = new System.Collections.ObjectModel.Collection<string>
                 {
                     "1 củ cà rốt",
@@ -51,7 +51,7 @@ public static class DbInitializer
                 CookingMinutes = 5,
                 CreatedAt = DateTime.UtcNow,
                 Description = "Bạn đang muốn tìm một công thức làm nước ép táo ngon hay bạn đang muốn kết hợp táo với các loại rau quả khác để tạo nên một ly nước ép trái cây thơm ngon, vị lạ miệng hơn thì bài viết này đang dành cho bạn đấy. Còn ngại gì mà không vào bếp cùng mình nào.",
-                ImageUrl = "https://cms-prod.s3-sgn09.fptcloud.com/loi_ich_cua_nuoc_ep_cam_ca_rot_doi_voi_suc_khoe_4_6d5af95d43.jpeg",
+                ImageFileName = "gyy31mol.jpg",
                 Ingredients = new System.Collections.ObjectModel.Collection<string>
                 {
                     "1 củ cà rốt",
@@ -71,7 +71,7 @@ public static class DbInitializer
                 CookingMinutes = 5,
                 CreatedAt = DateTime.UtcNow,
                 Description = "Bạn đang muốn tìm một công thức làm nước ép táo ngon hay bạn đang muốn kết hợp táo với các loại rau quả khác để tạo nên một ly nước ép trái cây thơm ngon, vị lạ miệng hơn thì bài viết này đang dành cho bạn đấy. Còn ngại gì mà không vào bếp cùng mình nào.",
-                ImageUrl = "https://cms-prod.s3-sgn09.fptcloud.com/loi_ich_cua_nuoc_ep_cam_ca_rot_doi_voi_suc_khoe_4_6d5af95d43.jpeg",
+                ImageFileName = "gyy31mol.jpg",
                 Ingredients = new System.Collections.ObjectModel.Collection<string>
                 {
                     "1 củ cà rốt",
@@ -91,7 +91,7 @@ public static class DbInitializer
                 CookingMinutes = 5,
                 CreatedAt = DateTime.UtcNow,
                 Description = "Bạn đang muốn tìm một công thức làm nước ép táo ngon hay bạn đang muốn kết hợp táo với các loại rau quả khác để tạo nên một ly nước ép trái cây thơm ngon, vị lạ miệng hơn thì bài viết này đang dành cho bạn đấy. Còn ngại gì mà không vào bếp cùng mình nào.",
-                ImageUrl = "https://cms-prod.s3-sgn09.fptcloud.com/loi_ich_cua_nuoc_ep_cam_ca_rot_doi_voi_suc_khoe_4_6d5af95d43.jpeg",
+                ImageFileName = "gyy31mol.jpg",
                 Ingredients = new System.Collections.ObjectModel.Collection<string>
                 {
                     "1 củ cà rốt",

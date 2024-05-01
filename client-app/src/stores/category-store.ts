@@ -13,7 +13,6 @@ export const useCategoryStore = () => {
     getters: {},
     actions: {
       async fetchCategories() {
-        console.log('------- trying to fetch categories');
         this.isLoading = true;
         const auth0 = useAuth0();
         const accessToken = await auth0.getAccessTokenSilently();
@@ -28,7 +27,6 @@ export const useCategoryStore = () => {
           );
           const data = await response.json();
           this.categories = data;
-          console.log('------- recieved categories', data);
           return this.categories;
         } catch (e) {
           return [];
