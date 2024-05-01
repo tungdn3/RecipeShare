@@ -1,6 +1,11 @@
 import { useAuth0 } from '@auth0/auth0-vue';
 import { defineStore } from 'pinia';
-import { Recipe, RecipeAdd, RecipeOverview } from 'src/interfaces/Recipe';
+import {
+  Recipe,
+  RecipeAdd,
+  RecipeEdit,
+  RecipeOverview,
+} from 'src/interfaces/Recipe';
 import { ref } from 'vue';
 
 export const useMyRecipesStore = defineStore('my-recipes', () => {
@@ -47,11 +52,7 @@ export const useMyRecipesStore = defineStore('my-recipes', () => {
     return data;
   }
 
-  async function save(recipe: RecipeAdd) {
-    if (!auth0) {
-      return;
-    }
-
+  async function create(recipe: RecipeAdd) {
     const accessToken = await auth0.getAccessTokenSilently();
     const response = await fetch('https://localhost:7000/management/recipes', {
       method: 'POST',
@@ -63,12 +64,33 @@ export const useMyRecipesStore = defineStore('my-recipes', () => {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to save recipe.');
+      throw new Error('Failed to create recipe.');
     } else {
-      await getMyRecipes();
+      getMyRecipes(); // not wait
+    }
+  }
+
+  async function update(id: number, recipe: RecipeEdit) {
+    const accessToken = await auth0.getAccessTokenSilently();
+    const response = await fetch(
+      `https://localhost:7000/management/recipes/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(recipe),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to update recipe.');
+    } else {
+      getMyRecipes(); // not wait
     }
   }
 
   getMyRecipes();
-  return { recipes, isLoading, getMyRecipes, getMyRecipeById, save };
+  return { recipes, isLoading, getMyRecipes, getMyRecipeById, create, update };
 });

@@ -20,7 +20,7 @@
     <div v-if="isAuthenticated">
       <q-btn round>
         <q-avatar>
-          <img src="https://cdn.quasar.dev/img/avatar.png" />
+          <img :src="user.picture" />
         </q-avatar>
         <q-menu>
           <q-list style="min-width: 100px">
@@ -84,6 +84,7 @@ import { useRouter } from 'vue-router';
 export default {
   setup() {
     const auth0 = useAuth0();
+    console.log('-------- user', auth0.user);
     const router = useRouter();
 
     function login() {

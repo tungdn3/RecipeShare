@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-pa-sm">
-    <h4>Recipes</h4>
+    <h4 class="text-primary">My Recipes</h4>
     <div v-if="!isLoading" class="row">
       <div
         class="col-12 col-sm-6 col-md-4 q-px-sm q-py-md"

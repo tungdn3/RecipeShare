@@ -13,6 +13,10 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: 'add', component: () => import('pages/recipe/RecipeAdd.vue') },
       {
+        path: ':id/edit',
+        component: () => import('pages/recipe/RecipeEdit.vue'),
+      },
+      {
         path: ':id',
         component: () => import('pages/recipe/RecipeDetails.vue'),
       },

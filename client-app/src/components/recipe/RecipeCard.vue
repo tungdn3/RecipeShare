@@ -1,10 +1,10 @@
 <template>
   <div class="recipe-card" @click="goToRecipeDetails">
     <q-card>
-      <img :src="props.imageUrl" />
+      <q-img :src="props.imageUrl" fit="cover" class="recipe-image" />
 
       <q-card-section class="q-pt-md q-pb-sm text-primary">
-        <div class="text-h6">{{ props.title }}</div>
+        <div class="text-h6 recipe-title">{{ props.title }}</div>
       </q-card-section>
 
       <q-separator inset />
@@ -64,14 +64,27 @@ defineOptions({
 const router = useRouter();
 
 function goToRecipeDetails() {
-  router.push({ path: '/recipes/' + props.id });
+  router.push({ path: `/recipes/${props.id}/edit` });
 }
 </script>
 
-<style>
+<style lang="scss">
+.recipe-card {
+  border-radius: 5px;
+}
+
 .recipe-card:hover {
   cursor: pointer;
-  border: solid 1px darkgreen;
-  border-radius: 5px;
+  box-shadow: $primary 0px 1px 5px 2px;
+}
+
+.recipe-image {
+  height: max(10rem, calc(100vw / 8));
+}
+
+.recipe-title {
+  height: 4rem;
+  line-height: 2rem;
+  overflow: hidden;
 }
 </style>

@@ -1,14 +1,14 @@
 <template>
-  <q-page class="column q-pt-md">
-    <h4>Add a new recipe</h4>
-    <q-form ref="recipeForm" class="q-mb-lg q-pl-sm q-pt-sm">
+  <q-page class="column">
+    <h4>Edit recipe</h4>
+    <q-form v-if="model" ref="recipeForm" class="q-mb-lg q-pl-sm q-pt-sm">
       <div>
         <div class="text-h5">Basic</div>
         <div class="q-pa-sm">
           <div class="row">
             <q-input
               outlined
-              v-model="title"
+              v-model="model.title"
               label="Title"
               :rules="[
                 (val) => val.length > 0 || 'Required',
@@ -18,25 +18,24 @@
             />
             <q-input
               outlined
-              v-model="preparationMinutes"
+              v-model="model.preparationMinutes"
               label="Preparation minutes"
               :rules="[(val) => val >= 0 || 'Positive number only']"
               class="col-12 col-md-4 q-pr-sm q-py-md"
             />
             <q-input
               outlined
-              v-model="cookingMinutes"
+              v-model="model.cookingMinutes"
               label="Cooking minutes"
               :rules="[(val) => val >= 0 || 'Positive number only']"
               class="col-12 col-md-4 q-pr-sm q-py-md"
             />
-
             <q-select
               outlined
-              v-model="selectedCategoryId"
+              v-model="model.categoryId"
               :options="categoryIds"
               :display-value="`${
-                categories.find((x) => x.id === selectedCategoryId)?.name ?? ''
+                categories.find((x) => x.id === model?.categoryId)?.name ?? ''
               }`"
               :option-label="(id) => categories.find((x) => x.id == id)?.name"
               :loading="isLoading"
@@ -56,7 +55,7 @@
             <q-input
               outlined
               type="textarea"
-              v-model="description"
+              v-model="model.description"
               label="Description"
               :rules="[(val) => val.length <= 2000 || 'Max length 2000']"
               class="col-12 q-pr-sm q-py-md"
@@ -70,12 +69,12 @@
         <div class="q-pa-sm">
           <div
             class="row items-center"
-            v-for="(_, index) in ingredients"
+            v-for="(_, index) in model.ingredients"
             :key="index"
           >
             <q-input
               outlined
-              v-model="ingredients[index]"
+              v-model="model.ingredients[index]"
               label="Ingredient"
               class="col q-pr-sm q-py-md"
               placeholder="e.g. 1 carrot"
@@ -106,7 +105,7 @@
             <q-input
               outlined
               type="textarea"
-              v-model="instructions"
+              v-model="model.instructions"
               :rules="[
                 (val) => val.length > 0 || 'Required',
                 (val) => val.length <= 2000 || 'Max length 2000',
@@ -168,6 +167,9 @@
         </div>
       </div>
     </q-form>
+    <div v-else class="row justify-center">
+      <q-spinner color="primary" size="3em" :thickness="10" />
+    </div>
   </q-page>
 </template>
 
@@ -175,24 +177,18 @@
 import { useAuth0 } from '@auth0/auth0-vue';
 import { storeToRefs } from 'pinia';
 import { Notify, QForm, QUploader } from 'quasar';
+import { RecipeEdit } from 'src/interfaces/Recipe';
 import { useCategoryStore } from 'src/stores/category-store';
 import { useMyRecipesStore } from 'src/stores/my-recipes-store';
-import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 defineOptions({
-  name: 'RecipeAdd',
+  name: 'RecipeEdit',
 });
 
-const title = ref('');
-const preparationMinutes = ref(15);
-const cookingMinutes = ref(15);
-const selectedCategoryId = ref<number | undefined>(undefined);
-const description = ref('');
-const ingredients = ref<string[]>(['']);
-const instructions = ref('');
-const isSaving = ref(false);
 const isPublished = ref('1');
+const isSaving = ref(false);
 const photoUploader = ref<QUploader | undefined>(undefined);
 
 const categoryStore = useCategoryStore();
@@ -203,19 +199,64 @@ const categoryIds = computed(() =>
 
 const recipeStore = useMyRecipesStore();
 const router = useRouter();
+const route = useRoute();
+const id = Number.parseInt(route.params.id as string);
 const recipeForm = ref<InstanceType<typeof QForm> | null>(null);
 const auth0 = useAuth0();
 
+const model = ref<RecipeEdit | null>(null);
+
+onMounted(async () => {
+  const recipe = await recipeStore.getMyRecipeById(id);
+  if (!recipe) {
+    Notify.create({
+      message: 'Something went wrong. Please try again later.',
+      color: 'negative',
+    });
+    return;
+  }
+  model.value = {
+    categoryId: recipe.categoryId,
+    cookingMinutes: recipe.cookingMinutes,
+    description: recipe.description,
+    id: id,
+    imageFileName: recipe.imageFileName,
+    ingredients: recipe.ingredients,
+    instructions: recipe.instructions,
+    isPublished: recipe.isPublished,
+    preparationMinutes: recipe.preparationMinutes,
+    title: recipe.title,
+  };
+  isPublished.value = recipe.isPublished ? '1' : '0';
+
+  setTimeout(async () => {
+    if (photoUploader.value && recipe.imageUrl) {
+      const response = await fetch(recipe.imageUrl, {
+        mode: 'cors',
+        headers: {
+          'Access-Control-Allow-Origin': window.origin,
+        },
+      });
+      const data = await response.blob();
+      const metadata = {
+        type: 'image/jpeg',
+      };
+      const file = new File([data], recipe.imageFileName, metadata);
+      photoUploader.value.addFiles([file]);
+    }
+  }, 200);
+});
+
 function removeIngredient(index: number) {
-  ingredients.value.splice(index, 1);
+  model.value?.ingredients.splice(index, 1);
 }
 
 function addIngredient() {
-  ingredients.value.push('');
+  model.value?.ingredients.push('');
 }
 
 async function save() {
-  if (!recipeForm.value) {
+  if (!model.value || !recipeForm.value) {
     return;
   }
 
@@ -237,25 +278,18 @@ async function save() {
   }
 
   const imageFileNames = await uploadPhotos();
-  await recipeStore.create({
-    categoryId: selectedCategoryId.value ?? 0,
-    cookingMinutes: cookingMinutes.value,
-    description: description.value,
-    ingredients: ingredients.value.filter((x) => x),
-    instructions: instructions.value,
-    isPublished: isPublished.value === '1',
-    imageFileName:
-      imageFileNames && imageFileNames[0] ? imageFileNames[0] : null,
-    preparationMinutes: preparationMinutes.value,
-    title: title.value,
-  });
+  model.value.imageFileName =
+    imageFileNames && imageFileNames[0] ? imageFileNames[0] : null;
+  model.value.isPublished = isPublished.value === '1';
+
+  await recipeStore.update(id, model.value);
 
   Notify.create({
     message: 'Recipe saved',
     color: 'positive',
   });
 
-  if (isPublished.value) {
+  if (model.value.isPublished) {
     router.push({ path: '/recipes' });
   }
 }
@@ -264,21 +298,38 @@ async function uploadPhotos() {
   if (!photoUploader.value || photoUploader.value.files.length === 0) {
     return [];
   }
+  const savedFileNames: string[] = [];
   const accessToken = await auth0.getAccessTokenSilently();
   const formData = new FormData();
-  for (const file of photoUploader.value.files) {
-    formData.append('files', file);
+  let hasNewFile = false;
+  for (const file of photoUploader.value.files as File[]) {
+    if (
+      model.value &&
+      model.value.imageFileName &&
+      file.name === model.value.imageFileName
+    ) {
+      // file not change, no need to upload
+      savedFileNames.push(model.value.imageFileName);
+    } else {
+      formData.append('files', file);
+      hasNewFile = true;
+    }
   }
 
-  const response = await fetch('https://localhost:7000/management/images', {
-    method: 'POST',
-    body: formData,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const data = await response.json();
-  return data;
+  if (hasNewFile) {
+    const response = await fetch('https://localhost:7000/management/images', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = (await response.json()) as string[];
+    for (const fileName of data ?? []) {
+      savedFileNames.push(fileName);
+    }
+  }
+  return savedFileNames;
 }
 
 function onPhotoRejected() {

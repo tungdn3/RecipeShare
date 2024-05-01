@@ -14,6 +14,8 @@ public class RecipeDto
 
     public string? ImageUrl { get; set; }
 
+    public string? ImageFileName { get; set; }
+
     public int PreparationMinutes { get; set; }
 
     public int CookingMinutes { get; set; }

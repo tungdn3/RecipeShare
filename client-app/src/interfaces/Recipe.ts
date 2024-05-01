@@ -20,6 +20,19 @@ export interface RecipeAdd {
   isPublished: boolean;
 }
 
+export interface RecipeEdit {
+  id: number;
+  title: string;
+  preparationMinutes: number;
+  cookingMinutes: number;
+  categoryId: number;
+  description: string;
+  ingredients: string[];
+  instructions: string;
+  imageFileName: string | null;
+  isPublished: boolean;
+}
+
 export interface Recipe {
   id: number;
   categoryId: number;
@@ -27,6 +40,7 @@ export interface Recipe {
   title: string;
   description: string;
   imageUrl: string;
+  imageFileName: string;
   preparationMinutes: number;
   cookingMinutes: number;
   ingredients: string[];
@@ -36,4 +50,5 @@ export interface Recipe {
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date;
+  isPublished: boolean;
 }

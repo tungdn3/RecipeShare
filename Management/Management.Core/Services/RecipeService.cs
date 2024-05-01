@@ -52,7 +52,7 @@ public class RecipeService : IRecipeService
     public async Task<RecipeDto[]> Get(string userId, string? title = null)
     {
         Recipe[] entities = await _recipeRepository.GetByUserId(userId, title);
-        
+
         RecipeDto[] dtos = entities.Select(x =>
         {
             string? imageUrl = !string.IsNullOrEmpty(x.ImageFileName) ? _imageRepository.GetImageUrl(x.ImageFileName!) : null;
@@ -96,7 +96,18 @@ public class RecipeService : IRecipeService
         Recipe? currentEntity = await _recipeRepository.GetById(id);
 
         DateTime now = DateTime.UtcNow;
-        bool isPublishedNow = dto.IsPublished && !currentEntity.IsPublished;
+        DateTime? publishedAt = null;
+        if (dto.IsPublished)
+        {
+            if (currentEntity.IsPublished)
+            {
+                publishedAt = currentEntity.PublishedAt;
+            }
+            else
+            {
+                publishedAt = now;
+            }
+        }
 
         Recipe newEntity = new()
         {
@@ -105,12 +116,12 @@ public class RecipeService : IRecipeService
             CreatedAt = currentEntity.CreatedAt,
             Description = dto.Description,
             Id = id,
-            ImageFileName = dto.ImageUrl,
+            ImageFileName = dto.ImageFileName,
             Ingredients = dto.Ingredients,
             Instructions = dto.Instructions,
             IsDeleted = false,
             IsPublished = dto.IsPublished,
-            PublishedAt = isPublishedNow ? now : currentEntity.PublishedAt,
+            PublishedAt = publishedAt,
             PreparationMinutes = dto.PreparationMinutes,
             Title = dto.Title,
             UpdatedAt = now,
@@ -118,6 +129,8 @@ public class RecipeService : IRecipeService
         };
 
         await _recipeRepository.Update(newEntity);
+
+        bool isPublishedNow = dto.IsPublished && !currentEntity.IsPublished;
         bool isUnpublished = currentEntity.IsPublished && !dto.IsPublished;
         if (isPublishedNow)
         {

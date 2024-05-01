@@ -15,6 +15,7 @@ public static class RecipeExtensions
             CreatedAt = recipe.CreatedAt,
             Description = recipe.Description,
             ImageUrl = imageUrl,
+            ImageFileName = recipe.ImageFileName,
             Ingredients = recipe.Ingredients,
             Instructions = recipe.Instructions,
             IsDeleted = recipe.IsDeleted,
