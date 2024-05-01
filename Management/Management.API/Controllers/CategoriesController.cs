@@ -2,10 +2,12 @@
 
 using Management.Core.Dtos;
 using Management.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Management.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("management/[controller]")]
 public class CategoriesController : ControllerBase

@@ -22,15 +22,25 @@ public class RecipesController : ControllerBase
     [HttpGet(Name = "GetRecipes")]
     public async Task<IEnumerable<RecipeDto>> Get(string? title = null)
     {
-        int userId = await _userService.GetCurrentUserId();
+        await Task.Delay(2000);
+        string userId = await _userService.GetCurrentUserId();
         RecipeDto[] recipes = await _recipeService.Get(userId, title);
         return recipes;
+    }
+
+    [HttpGet("{id}", Name = "GetById")]
+    public async Task<RecipeDto?> GetById(int id)
+    {
+        await Task.Delay(2000);
+        string userId = await _userService.GetCurrentUserId();
+        RecipeDto? recipe = await _recipeService.GetById(userId, id);
+        return recipe;
     }
 
     [HttpPost(Name = "CreateRecipe")]
     public async Task<int> Create([FromBody] RecipeCreateDto dto)
     {
-        int userId = await _userService.GetCurrentUserId();
+        string userId = await _userService.GetCurrentUserId();
         int recipeId = await _recipeService.Create(userId, dto);
         return recipeId;
     }

@@ -2,10 +2,10 @@
 using Management.Core.Interfaces;
 using Management.Core.Services;
 using Management.Core.Validators;
+using Management.Infrastructure;
 using Management.Infrastructure.EF;
 using Management.Infrastructure.EF.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -19,6 +19,7 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRecipeService, RecipeService>();
+        services.AddScoped<IImageService, ImageService>();
 
         return services;
     }
@@ -39,6 +40,11 @@ public static class DependencyInjection
 
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IRecipeRepository, RecipeRepository>();
+        services.AddBlobImageRepository(options =>
+        {
+            options.ConnectionString = configuration["AzureStorageOptions:ConnectionString"]!;
+            options.ImageBlobContainerName = configuration["AzureStorageOptions:ImageBlobContainerName"]!;
+        });
 
         return services;
     }
@@ -66,7 +72,6 @@ public static class DependencyInjection
                     {
                         AuthorizationUrl = new Uri($"https://{configuration["Auth0:Domain"]}/authorize", UriKind.Absolute),
                     },
-
                 },
                 Name = "Authorization",
                 In = ParameterLocation.Header,
@@ -83,7 +88,6 @@ public static class DependencyInjection
                             Type = ReferenceType.SecurityScheme,
                             Id = "oauth2",
                         },
-
                     },
                     Array.Empty<string>()
                 }
