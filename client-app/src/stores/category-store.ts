@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import Category from 'src/interfaces/Category';
 import { useAuth0 } from '@auth0/auth0-vue';
+import { api } from 'src/boot/axios';
 
 export const useCategoryStore = () => {
   const categoryStore = defineStore('category', {
@@ -17,16 +18,12 @@ export const useCategoryStore = () => {
         const auth0 = useAuth0();
         const accessToken = await auth0.getAccessTokenSilently();
         try {
-          const response = await fetch(
-            'https://localhost:7000/management/categories',
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          );
-          const data = await response.json();
-          this.categories = data;
+          const response = await api.get<Category[]>('/management/categories', {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          this.categories = response.data;
           return this.categories;
         } catch (e) {
           return [];

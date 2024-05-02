@@ -48,35 +48,6 @@
   </div>
 </template>
 
-<!-- <script setup lang="ts">
-import { useAuth0 } from '@auth0/auth0-vue';
-import { useRouter } from 'vue-router';
-
-defineOptions({
-  name: 'UserProfile',
-});
-
-const auth0 = useAuth0();
-console.log('------ auth0', auth0);
-const router = useRouter();
-
-function login() {
-  auth0.loginWithRedirect();
-}
-
-function logout() {
-  auth0.logout({
-    logoutParams: {
-      returnTo: window.location.origin,
-    },
-  });
-}
-
-function goToMyRecipes() {
-  router.push('/recipes');
-}
-</script> -->
-
 <script>
 import { useAuth0 } from '@auth0/auth0-vue';
 import { useRouter } from 'vue-router';

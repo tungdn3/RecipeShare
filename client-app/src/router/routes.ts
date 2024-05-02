@@ -1,15 +1,12 @@
+import { authGuard } from '@auth0/auth0-vue';
 import RecipeList from 'src/pages/recipe/RecipeList.vue';
 import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
-  },
-  {
     path: '/recipes',
     component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: authGuard,
     children: [
       { path: 'add', component: () => import('pages/recipe/RecipeAdd.vue') },
       {
@@ -22,10 +19,14 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: '',
-        //component: () => import('pages/recipe/RecipeList.vue'),
         component: RecipeList,
       },
     ],
+  },
+  {
+    path: '/',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
   },
 
   // Always leave this as last one,

@@ -19,7 +19,7 @@
       </div>
     </div>
     <div v-else>
-      <h3>Loading...</h3>
+      <q-spinner color="primary" size="3em" />
     </div>
     <div class="row justify-center q-my-md">
       <q-btn color="primary">Load More</q-btn>
