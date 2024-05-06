@@ -64,7 +64,7 @@ defineOptions({
 const router = useRouter();
 
 function goToRecipeDetails() {
-  router.push({ path: `/recipes/${props.id}/edit` });
+  router.push({ path: `/my-recipes/${props.id}/edit` });
 }
 </script>
 

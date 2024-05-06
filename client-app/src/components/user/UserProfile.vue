@@ -30,8 +30,8 @@
 
             <q-separator />
 
-            <q-item clickable v-close-popup @click="goToMyRecipes">
-              <q-item-section>My Posts</q-item-section>
+            <q-item clickable v-close-popup @click="goToSettings">
+              <q-item-section>Settings</q-item-section>
             </q-item>
 
             <q-separator />
@@ -70,8 +70,8 @@ export default {
       });
     }
 
-    function goToMyRecipes() {
-      router.push('/recipes');
+    function goToSettings() {
+      router.push('/user/settings');
     }
 
     return {
@@ -80,7 +80,7 @@ export default {
       isLoading: auth0.isLoading,
       login,
       logout,
-      goToMyRecipes,
+      goToSettings,
     };
   },
 };

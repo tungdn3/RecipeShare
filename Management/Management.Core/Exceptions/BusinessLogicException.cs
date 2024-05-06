@@ -1,23 +1,21 @@
-﻿using System.Runtime.Serialization;
+﻿namespace Management.Core.Exceptions;
 
-namespace Management.Core.Exceptions;
-
-[Serializable]
 public class BusinessLogicException : Exception
 {
-    public BusinessLogicException()
+    public string ErrorCode { get; private set; }
+
+    public BusinessLogicException(string errorCode)
     {
+        ErrorCode = errorCode;
     }
 
-    public BusinessLogicException(string? message) : base(message)
+    public BusinessLogicException(string errorCode, string? message) : base(message)
     {
+        ErrorCode = errorCode;
     }
 
-    public BusinessLogicException(string? message, Exception? innerException) : base(message, innerException)
+    public BusinessLogicException(string errorCode, string? message, Exception? innerException) : base(message, innerException)
     {
-    }
-
-    protected BusinessLogicException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
+        ErrorCode = errorCode;
     }
 }

@@ -104,10 +104,14 @@ module.exports = configure(function (/* ctx */) {
     framework: {
       config: {
         brand: {
-          primary: '#114232',
-          secondary: '#87A922',
-          accent: '#FCDC2A',
-          info: 'F7F6BB',
+          primary: '#6a9d19',
+          secondary: '#b2d371',
+          accent: '#8024b2',
+          info: '#196a9d',
+          dark: '#2f6800',
+          negative: '#D32F2F',
+          positive: '#6a9d19',
+          warning: '#FFEB3B',
         },
         notify: {
           timeout: 3000,

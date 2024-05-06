@@ -4,7 +4,7 @@ import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/recipes',
+    path: '/my-recipes',
     component: () => import('layouts/MainLayout.vue'),
     beforeEnter: authGuard,
     children: [
@@ -21,6 +21,17 @@ const routes: RouteRecordRaw[] = [
         path: '',
         component: RecipeList,
       },
+    ],
+  },
+  {
+    path: '/user',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: 'settings',
+        component: () => import('pages/user/SettingsPage.vue'),
+      },
+      { path: '', component: () => import('pages/user/SettingPage.vue') },
     ],
   },
   {

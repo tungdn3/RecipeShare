@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi(builder.Configuration);
@@ -57,10 +58,7 @@ builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.Is
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseOpenApi(app.Configuration);
-}
+app.UseOpenApi(app.Configuration);
 
 using (var scope = app.Services.CreateScope())
 {
@@ -71,7 +69,8 @@ using (var scope = app.Services.CreateScope())
     DbInitializer.Initialize(context);
 }
 
-app.UseHttpsRedirection();
+app.UseExceptionHandler("/error");
+// app.UseHttpsRedirection();
 app.UseCors("AllowFE");
 app.UseAuthentication();
 app.UseAuthorization();

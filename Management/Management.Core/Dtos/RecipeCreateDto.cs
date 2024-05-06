@@ -4,7 +4,7 @@ namespace Management.Core.Dtos;
 
 public class RecipeCreateDto
 {
-    public int CategoryId { get; set; }
+    public int? CategoryId { get; set; }
 
     public string Title { get; set; } = string.Empty;
 
