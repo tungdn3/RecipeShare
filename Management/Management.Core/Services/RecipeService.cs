@@ -1,9 +1,12 @@
 ﻿using FluentValidation;
 using Management.Core.Dtos;
 using Management.Core.Entities;
+using Management.Core.Exceptions;
 using Management.Core.Extensions;
 using Management.Core.Interfaces;
+using MassTransit;
 using Microsoft.Extensions.Logging;
+using Shared.IntegrationEvents;
 
 namespace Management.Core.Services;
 
@@ -16,6 +19,7 @@ public class RecipeService : IRecipeService
     private readonly IValidator<RecipeCreateDto> _createValidator;
     private readonly IValidator<RecipePublishDto> _publishValidator;
     private readonly IValidator<RecipeUpdateDto> _updateValidator;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public RecipeService(
         ILogger<RecipeService> logger,
@@ -24,7 +28,8 @@ public class RecipeService : IRecipeService
         IValidator<RecipeCreateDto> createValidator,
         IValidator<RecipePublishDto> publishValidator,
         IValidator<RecipeUpdateDto> updateValidator,
-        IImageRepository imageRepository)
+        IImageRepository imageRepository,
+        IPublishEndpoint publishEndpoint)
     {
         _logger = logger;
         _recipeRepository = recipeRepository;
@@ -33,6 +38,7 @@ public class RecipeService : IRecipeService
         _publishValidator = publishValidator;
         _updateValidator = updateValidator;
         _imageRepository = imageRepository;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<int> Create(string userId, RecipeCreateDto dto)
@@ -43,7 +49,7 @@ public class RecipeService : IRecipeService
 
         if (dto.IsPublished)
         {
-            // Send published event, or created event
+            await _publishEndpoint.Publish(entity.ToRecipePublished());
         }
 
         return recipeId;
@@ -78,14 +84,16 @@ public class RecipeService : IRecipeService
     {
         await _publishValidator.ValidateAndThrowAsync(dto);
 
-        Recipe? recipe = await _recipeRepository.GetById(dto.Id);
+        Recipe? recipe = await _recipeRepository.GetById(dto.Id)
+            ?? throw new NotFoundException($"No recipe with the given Id {dto.Id} found.");
+
         if (!recipe.IsPublished)
         {
             recipe.IsPublished = true;
             recipe.PublishedAt = DateTime.UtcNow;
             await _recipeRepository.Update(recipe);
 
-            // send published event
+            await _publishEndpoint.Publish(recipe.ToRecipePublished());
         }
     }
 
@@ -93,7 +101,7 @@ public class RecipeService : IRecipeService
     {
         await _updateValidator.ValidateAndThrowAsync(dto);
 
-        Recipe? currentEntity = await _recipeRepository.GetById(id);
+        Recipe currentEntity = (await _recipeRepository.GetById(id))!;
 
         DateTime now = DateTime.UtcNow;
         DateTime? publishedAt = null;
@@ -130,15 +138,26 @@ public class RecipeService : IRecipeService
 
         await _recipeRepository.Update(newEntity);
 
-        bool isPublishedNow = dto.IsPublished && !currentEntity.IsPublished;
-        bool isUnpublished = currentEntity.IsPublished && !dto.IsPublished;
-        if (isPublishedNow)
+        if (dto.IsPublished)
         {
-            // send published event
+            if (!currentEntity.IsPublished)
+            {
+                await _publishEndpoint.Publish(newEntity.ToRecipePublished());
+            }
+            else
+            {
+                await _publishEndpoint.Publish(newEntity.ToRecipeUpdated());
+            }
         }
-        else if (isUnpublished)
+        else
         {
-            // send Unpublished event
+            if (currentEntity.IsPublished)
+            {
+                await _publishEndpoint.Publish(new RecipeUnpublished
+                {
+                    Id = newEntity.Id,
+                });
+            }
         }
     }
 }
