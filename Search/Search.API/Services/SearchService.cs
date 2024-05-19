@@ -1,8 +1,7 @@
 ﻿using Elastic.Clients.Elasticsearch;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Search.API.Models;
-using System.Net;
+using Search.API.Repositories;
 
 namespace Search.API.Services;
 
@@ -10,52 +9,54 @@ public class SearchService
 {
     private readonly ILogger<SearchService> _logger;
     private readonly ElasticsearchClient _client;
+    private readonly BlobImageRepository _blobImageRepository;
 
-    public SearchService(ILogger<SearchService> logger, ElasticsearchClient client)
+    public SearchService(ILogger<SearchService> logger, ElasticsearchClient client, BlobImageRepository blobImageRepository)
     {
         _logger = logger;
         _client = client;
+        _blobImageRepository = blobImageRepository;
     }
 
-    public async Task<IReadOnlyCollection<Recipe>> Search(RecipeSearchRequest request)
+    public async Task<PageResultDto<SearchResultItemDto>> Search(RecipeSearchRequest request)
     {
         var requestDescriptor = new SearchRequestDescriptor<Recipe>()
-        .From((request.Page - 1) * request.PageSize)
-        .Size(request.PageSize)
-        .Query(q => q
-            .Bool(b =>
-            {
-                if (!string.IsNullOrEmpty(request.Query))
+            .From((request.PageNumber - 1) * request.PageSize)
+            .Size(request.PageSize)
+            .Query(q => q
+                .Bool(b =>
                 {
-                    b.Must(m =>
+                    if (!string.IsNullOrEmpty(request.Query))
                     {
-                        m.MultiMatch(m =>
+                        b.Must(m =>
                         {
-                            m.Query(request.Query);
-                            m.Fields(new Field[]
+                            m.MultiMatch(m =>
                             {
-                                new("title"),
-                                new("ingredients"),
-                                new("description"),
-                                new("instructions"),
+                                m.Query(request.Query);
+                                m.Fields(new Field[]
+                                {
+                                    new("title"),
+                                    new("ingredients"),
+                                    new("description"),
+                                    new("instructions"),
+                                });
                             });
                         });
-                    });
-                }
+                    }
 
-                if (request.CategoryId != null)
-                {
-                    b.Filter(f =>
+                    if (request.CategoryId != null)
                     {
-                        f.Term(t =>
+                        b.Filter(f =>
                         {
-                            t.Field(r => r.CategoryId);
-                            t.Value(request.CategoryId.Value);
+                            f.Term(t =>
+                            {
+                                t.Field(r => r.CategoryId);
+                                t.Value(request.CategoryId.Value);
+                            });
                         });
-                    });
-                }
-            })
-        );
+                    }
+                })
+            );
 
         SearchResponse<Recipe> response = await _client.SearchAsync(requestDescriptor);
 
@@ -64,10 +65,31 @@ public class SearchService
             _logger.LogError("Failed to search recipes with request '{RecipeSearchRequest}'. Debug info: '{DebugInfo}'",
                 JsonConvert.SerializeObject(request), response.DebugInformation);
             
-            return new List<Recipe>();
+            return new PageResultDto<SearchResultItemDto>();
         }
 
-        return response.Documents;
+        List<SearchResultItemDto> items = response.Documents.Select(x => new SearchResultItemDto
+        {
+            CategoryId = x.CategoryId,
+            Title = x.Title,
+            Description = x.Description,
+            CookingMinutes = x.CookingMinutes,
+            CreatedAt = x.CreatedAt,
+            Id = x.Id,
+            ImageUrl = _blobImageRepository.GetImageUrl(x.ImageFileName),
+            PreparationMinutes = x.PreparationMinutes,
+            PublishedAt = x.PublishedAt,
+            UpdatedAt = x.UpdatedAt,
+            UserId = x.UserId,
+        }).ToList();
+
+        return new PageResultDto<SearchResultItemDto>
+        {
+            Items = items,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalCount = response.Total,
+        };
     }
 
     public async Task<List<string>> Complete(string query, int top = 10)
@@ -88,7 +110,7 @@ public class SearchService
         if (!response.IsValidResponse)
         {
             _logger.LogError("Failed to generate completions for Query '{Query}'. Debug info: '{DebugInfo}'.", query, response.DebugInformation);
-            return new List<string>();
+            return [];
         }
 
         List<string> titles = response.Documents.Select(x => x.Title).ToList();

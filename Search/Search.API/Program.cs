@@ -11,8 +11,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFE", policy =>
+    {
+        policy
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowAnyOrigin();
+    });
+});
+
 builder.Services.AddServiceBus(builder.Configuration);
 builder.Services.AddElasticSearch(builder.Configuration);
+builder.Services.AddBlobStorage(builder.Configuration);
 builder.Services.AddServices();
 
 var app = builder.Build();
@@ -27,6 +40,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseCors("AllowFE");
 
 app.MapControllers();
 

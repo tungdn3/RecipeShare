@@ -1,8 +1,10 @@
 ﻿using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 using MassTransit;
+using Search.API.Configurations;
 using Search.API.Consumers;
 using Search.API.Models;
+using Search.API.Repositories;
 using Search.API.Services;
 
 namespace Search.API;
@@ -70,6 +72,13 @@ public static class DependencyInjection
                
             return client;
         });
+    }
+
+    public static IServiceCollection AddBlobStorage(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<AzureStorageOptions>(configuration.GetSection("AzureStorage"));
+        services.AddSingleton<BlobImageRepository>();
+        return services;
     }
 
     public static IServiceCollection AddServices(this IServiceCollection services)

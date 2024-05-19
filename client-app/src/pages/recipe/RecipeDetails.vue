@@ -2,58 +2,65 @@
   <q-page class="q-pa-sm">
     <h4>{{ recipe?.title }}</h4>
     <div class="row">
-      <div class="col-12 col-md-8 q-pr-sm">
+      <div v-if="recipe" class="col-12 col-md-8 q-pr-sm">
         <div class="row">
-          <q-img :src="recipe?.imageUrl" fit="cover"></q-img>
+          <q-img :src="recipe.imageUrl" fit="cover"></q-img>
         </div>
         <div class="row q-my-sm">
-          {{ recipe?.description }}
+          {{ recipe.description }}
         </div>
         <div class="row q-my-sm">
-          {{ recipe?.instructions }}
+          {{ recipe.instructions }}
         </div>
       </div>
+      <div v-else class="col-12 col-md-8 row justify-center">
+        <q-spinner color="secondary" size="3rem" />
+      </div>
       <div class="col-12 col-md-4">
-        <div class="row justify-between">
-          <div class="col-sm-auto q-pr-sm">Preparation time</div>
-          <div>{{ recipe?.preparationMinutes }} mins</div>
-        </div>
+        <ReadOnlyField
+          class="q-pt-none"
+          label="Preparation time"
+          :value="recipe ? `${recipe.preparationMinutes} min` : ''"
+        />
+        <ReadOnlyField
+          label="Cooking time"
+          :value="recipe ? `${recipe.cookingMinutes} min` : ''"
+        />
 
-        <div class="row justify-between">
-          <div class="col-sm-auto q-pr-sm">Cooking time</div>
-          <div>{{ recipe?.cookingMinutes }} mins</div>
-        </div>
+        <div class="q-my-md"></div>
 
-        <div class="row justify-between q-pt-md">
-          <div class="col-sm-auto q-pr-sm">Category</div>
-          <div>{{ recipe?.categoryName }}</div>
-        </div>
+        <ReadOnlyField
+          label="Category"
+          :value="recipe ? recipe.categoryName : ''"
+        />
+        <ReadOnlyField
+          label="Posted by"
+          :value="recipe ? recipe.userName : ''"
+        />
 
-        <div class="row justify-between">
-          <div class="col-sm-auto q-pr-sm">Posted by</div>
-          <div>{{ recipe?.userName }}</div>
-        </div>
+        <div class="q-my-md"></div>
 
-        <div class="row justify-between q-pt-md">
-          <div
+        <div class="col-12">
+          <ReadOnlyField
             v-for="ingredient in recipe?.ingredients"
+            :label="ingredient"
             :key="ingredient"
-            class="col-12"
-          >
-            {{ ingredient }}
-          </div>
+            no-value
+          />
         </div>
+      </div>
+      <div class="col-12 q-mt-lg">
+        <q-btn outline color="secondary" icon="thumb_up" />
+        <q-btn :outline="false" color="primary" icon="thumb_up" />
       </div>
     </div>
     <q-separator class="q-mt-lg" />
 
-    <div>
-      <CommentList />
-    </div>
+    <CommentForm />
 
     <q-separator />
 
-    <CommentForm />
+    <CommentList />
   </q-page>
 </template>
 
@@ -63,7 +70,8 @@ import CommentList from 'src/components/comment/CommentList.vue';
 import CommentForm from 'src/components/comment/CommentForm.vue';
 import { useRoute } from 'vue-router';
 import { useMyRecipesStore } from 'src/stores/my-recipes-store';
-import { Recipe } from 'src/interfaces/Recipe';
+import { IRecipe } from 'src/interfaces/Recipe';
+import ReadOnlyField from 'src/components/ReadOnlyField.vue';
 
 defineOptions({
   name: 'RecipeDetails',
@@ -72,7 +80,7 @@ defineOptions({
 const route = useRoute();
 const id = ref(Number.parseInt(route.params.id as string));
 const recipeStore = useMyRecipesStore();
-const recipe = ref<Recipe | null>();
+const recipe = ref<IRecipe | null>();
 
 onMounted(async () => {
   recipe.value = await recipeStore.getMyRecipeById(id.value);

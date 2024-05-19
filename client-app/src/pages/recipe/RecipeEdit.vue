@@ -178,7 +178,7 @@ import { useAuth0 } from '@auth0/auth0-vue';
 import { storeToRefs } from 'pinia';
 import { Notify, QForm, QUploader } from 'quasar';
 import { api } from 'src/boot/axios';
-import { RecipeEdit } from 'src/interfaces/Recipe';
+import { IRecipeEdit } from 'src/interfaces/Recipe';
 import { useCategoryStore } from 'src/stores/category-store';
 import { useMyRecipesStore } from 'src/stores/my-recipes-store';
 import { computed, onMounted, ref } from 'vue';
@@ -205,7 +205,7 @@ const id = Number.parseInt(route.params.id as string);
 const recipeForm = ref<InstanceType<typeof QForm> | null>(null);
 const auth0 = useAuth0();
 
-const model = ref<RecipeEdit | null>(null);
+const model = ref<IRecipeEdit | null>(null);
 
 onMounted(async () => {
   const recipe = await recipeStore.getMyRecipeById(id);

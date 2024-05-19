@@ -18,17 +18,17 @@ public class SearchController : ControllerBase
     }
 
     [HttpGet(Name = "SearchRecipes")]
-    public async Task< IActionResult> SearchRecipes(int? categoryId = null, string? query = null, int page = 1, int pageSize = 10)
+    public async Task<PageResultDto<SearchResultItemDto>> SearchRecipes(int? categoryId = null, string? query = null, int pageNumber = 1, int pageSize = 10)
     {
-        IReadOnlyCollection<Recipe> items = await _searchService.Search(new RecipeSearchRequest
+        PageResultDto<SearchResultItemDto> pageResult = await _searchService.Search(new RecipeSearchRequest
         {
             CategoryId = categoryId,
             Query = query,
-            Page = page,
+            PageNumber = pageNumber,
             PageSize = pageSize,
         });
 
-        return Ok(items);
+        return pageResult;
     }
 
     [HttpGet("complete", Name = "Complete")]
