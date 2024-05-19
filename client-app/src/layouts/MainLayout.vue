@@ -14,9 +14,9 @@
       </q-toolbar>
 
       <q-tabs align="center">
-        <q-route-tab to="/recipes" label="Recipes" />
-        <q-route-tab to="/page2" label="Page Two" />
-        <q-route-tab to="/recipes/add" label="Submit A Recipe" />
+        <q-route-tab to="/" label="Home" />
+        <q-route-tab to="/my-recipes" label="My Recipes" />
+        <q-route-tab to="/my-recipes/add" label="Submit A Recipe" />
       </q-tabs>
     </q-header>
 

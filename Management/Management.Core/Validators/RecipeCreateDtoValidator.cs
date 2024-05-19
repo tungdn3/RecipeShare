@@ -22,10 +22,14 @@ public class RecipeCreateDtoValidator : AbstractValidator<RecipeCreateDto>
             .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.CategoryId)
-            .NotEmpty()
             .MustAsync(async (categoryId, cancellationToken) =>
             {
-                var category = await categoryRepository.GetById(categoryId);
+                if (!categoryId.HasValue)
+                {
+                    return true;
+                }
+
+                var category = await categoryRepository.GetById(categoryId.Value);
                 return category != null && !category.IsDeleted;
             }).WithMessage("Invalid category.");
 

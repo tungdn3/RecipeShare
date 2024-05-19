@@ -1,4 +1,4 @@
-export interface RecipeOverview {
+export interface IRecipeCard {
   id: number;
   title: string;
   imageUrl: string;
@@ -8,7 +8,7 @@ export interface RecipeOverview {
   nbOfComments: number;
 }
 
-export interface RecipeAdd {
+export interface IRecipeAdd {
   title: string;
   preparationMinutes: number;
   cookingMinutes: number;
@@ -20,7 +20,7 @@ export interface RecipeAdd {
   isPublished: boolean;
 }
 
-export interface RecipeEdit {
+export interface IRecipeEdit {
   id: number;
   title: string;
   preparationMinutes: number;
@@ -33,7 +33,7 @@ export interface RecipeEdit {
   isPublished: boolean;
 }
 
-export interface Recipe {
+export interface IRecipe {
   id: number;
   categoryId: number;
   categoryName: string;

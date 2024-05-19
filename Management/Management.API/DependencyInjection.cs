@@ -5,9 +5,11 @@ using Management.Core.Validators;
 using Management.Infrastructure;
 using Management.Infrastructure.EF;
 using Management.Infrastructure.EF.Repositories;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Shared.IntegrationEvents;
 
 namespace Management.API;
 
@@ -20,6 +22,36 @@ public static class DependencyInjection
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRecipeService, RecipeService>();
         services.AddScoped<IImageService, ImageService>();
+
+        services.AddMassTransit(x =>
+        {
+            x.SetKebabCaseEndpointNameFormatter();
+
+            x.UsingAzureServiceBus((_, cfg) =>
+            {
+                cfg.Host(configuration.GetConnectionString("AzureServiceBus"));
+
+                cfg.Message<RecipePublished>(x =>
+                {
+                    x.SetEntityName("recipe-published");
+                });
+
+                cfg.Message<RecipeUnpublished>(x =>
+                {
+                    x.SetEntityName("recipe-unpublished");
+                });
+
+                cfg.Message<RecipeUpdated>(x =>
+                {
+                    x.SetEntityName("recipe-updated");
+                });
+
+                cfg.Message<RecipeDeleted>(x =>
+                {
+                    x.SetEntityName("recipe-deleted");
+                });
+            });
+        });
 
         return services;
     }

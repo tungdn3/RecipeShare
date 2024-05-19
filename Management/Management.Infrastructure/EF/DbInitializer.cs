@@ -13,11 +13,16 @@ public static class DbInitializer
 
         var categories = new Category[]
         {
-            new() { Name = "Category 1" },
-            new() { Name = "Category 2" },
-            new() { Name = "Category 3" },
-            new() { Name = "Category 4" },
-            new() { Name = "Category 5" },
+            new() { Name = "Appetizers" },
+            new() { Name = "Beverages" },
+            new() { Name = "Breads" },
+            new() { Name = "Breakfast" },
+            new() { Name = "Desserts" },
+            new() { Name = "Main Dishes" },
+            new() { Name = "Salads" },
+            new() { Name = "Side Dishes" },
+            new() { Name = "Soups" },
+            new() { Name = "Vegetarian/Vegan" },
         };
 
         context.Categories.AddRange(categories);

@@ -4,7 +4,7 @@ import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/recipes',
+    path: '/my-recipes',
     component: () => import('layouts/MainLayout.vue'),
     beforeEnter: authGuard,
     children: [
@@ -24,9 +24,26 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/user',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: 'settings',
+        component: () => import('pages/user/SettingsPage.vue'),
+      },
+      { path: '', component: () => import('pages/user/SettingPage.vue') },
+    ],
+  },
+  {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') },
+      {
+        path: 'recipes/:id',
+        component: () => import('pages/recipe/RecipeDetails.vue'),
+      },
+    ],
   },
 
   // Always leave this as last one,
