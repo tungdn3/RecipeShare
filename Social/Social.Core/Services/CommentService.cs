@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Management.Infrastructure.EF
+namespace Social.Core.Services;
+
+public class CommentService
 {
-    internal class Configurations
-    {
-    }
 }

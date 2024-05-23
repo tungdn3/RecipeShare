@@ -13,8 +13,8 @@
           :cooking-minutes="recipe.cookingMinutes"
           :preparation-minutes="recipe.preparationMinutes"
           :image-url="recipe.imageUrl"
-          :nb-of-likes="recipe.nbOfLikes"
-          :nb-of-comments="recipe.nbOfComments"
+          :nb-of-likes="recipe.likeCount"
+          :nb-of-comments="recipe.commentCount"
         />
       </div>
     </div>

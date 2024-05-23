@@ -76,6 +76,12 @@ public static class DependencyInjection
 
     public static IServiceCollection AddBlobStorage(this IServiceCollection services, IConfiguration configuration)
     {
+        string? azureStorageConnectionString = configuration["AzureStorage:ConnectionString"];
+        if (string.IsNullOrEmpty(azureStorageConnectionString))
+        {
+            throw new ArgumentException("Missing AzureStorage:ConnectionString");
+        }
+
         services.Configure<AzureStorageOptions>(configuration.GetSection("AzureStorage"));
         services.AddSingleton<BlobImageRepository>();
         return services;

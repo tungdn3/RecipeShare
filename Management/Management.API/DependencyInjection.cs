@@ -62,20 +62,27 @@ public static class DependencyInjection
         if (isDevelopment)
         {
             services.AddDbContext<ManagementDbContext>(options =>
-                options.UseSqlite(configuration.GetConnectionString("SchoolContextSQLite")));
+                options.UseSqlite(configuration.GetConnectionString("ManagementDbContextSQLite")));
         }
         else
         {
             services.AddDbContext<ManagementDbContext>(options =>
-                options.UseSqlite(configuration.GetConnectionString("SchoolContextMSSQL")));
+                options.UseSqlite(configuration.GetConnectionString("ManagementDbContextMSSQL")));
         }
 
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IRecipeRepository, RecipeRepository>();
+
+        string? azureStorageConnectionString = configuration["AzureStorage:ConnectionString"];
+        if (string.IsNullOrEmpty(azureStorageConnectionString))
+        {
+            throw new ArgumentException("Missing AzureStorage:ConnectionString");
+        }
+
         services.AddBlobImageRepository(options =>
         {
-            options.ConnectionString = configuration["AzureStorageOptions:ConnectionString"]!;
-            options.ImageBlobContainerName = configuration["AzureStorageOptions:ImageBlobContainerName"]!;
+            options.ConnectionString = azureStorageConnectionString;
+            options.ImageBlobContainerName = configuration["AzureStorage:ImageBlobContainerName"]!;
         });
 
         return services;
