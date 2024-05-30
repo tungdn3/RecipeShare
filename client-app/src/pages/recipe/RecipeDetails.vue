@@ -74,11 +74,28 @@
     </div>
     <q-separator class="q-mt-lg" />
 
-    <CommentForm />
+    <div class="text-h6 text-primary q-mt-md">
+      {{ formatNumber(commentCount ?? 0) }} comments
+    </div>
 
-    <q-separator />
+    <CommentForm
+      v-if="!isCommentSubmitting"
+      ref="commentForm"
+      class="q-mt-md"
+      @submit="submitComment"
+    />
 
-    <CommentList />
+    <div v-if="isCommentSubmitting" class="row q-ml-md q-my-md">
+      <q-spinner-dots color="secondary" size="30px" />
+    </div>
+
+    <CommentList
+      ref="commentList"
+      :recipe-id="1"
+      :recipe-author-id="recipe?.userId ?? ''"
+      class="q-mt-md"
+      @count-changed="(val) => (commentCount = val)"
+    />
   </q-page>
 </template>
 
@@ -106,6 +123,10 @@ const recipeStore = useMyRecipesStore();
 const recipe = ref<IRecipe | null>();
 const likeId = ref<number | undefined>(undefined);
 const likeCount = ref<number | undefined>(undefined);
+const commentCount = ref<number | undefined>(undefined);
+const isCommentSubmitting = ref(false);
+const commentForm = ref<InstanceType<typeof CommentForm> | null>(null);
+const commentList = ref<InstanceType<typeof CommentList> | null>(null);
 
 onMounted(async () => {
   recipe.value = await recipeStore.getMyRecipeById(id.value);
@@ -158,6 +179,40 @@ async function onUnlike() {
   });
   if (response.status == 200 || response.status == 204) {
     likeId.value = undefined;
+  }
+}
+
+async function submitComment(content: string | undefined) {
+  console.log('---------- submit comment', content);
+  if (!content) {
+    return;
+  }
+  isCommentSubmitting.value = true;
+  try {
+    const accessToken = await auth0.getAccessTokenSilently();
+    const response = await socialApi.post(
+      'comments',
+      {
+        recipeId: id.value,
+        parentId: null,
+        content: content,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (response.status === 200 || response.status === 201) {
+      commentForm.value?.reset();
+      isCommentSubmitting.value = false;
+      setTimeout(() => {
+        commentList.value?.refresh();
+      }, 100);
+    }
+  } catch {
+    isCommentSubmitting.value = false;
   }
 }
 </script>

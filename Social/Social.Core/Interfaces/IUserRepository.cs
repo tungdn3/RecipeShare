@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Social.Core.Dto;
 
 namespace Social.Core.Interfaces;
 
 public interface IUserRepository
 {
     string GetCurrentUserId();
+    List<UserDto> GetUsers(string[] userIds);
 }

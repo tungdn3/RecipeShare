@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Social.Core.Dto;
 using Social.Core.Exceptions;
 using Social.Core.Interfaces;
 
@@ -22,5 +23,15 @@ internal class UserRepository : IUserRepository
 
         string identityName = _httpContextAccessor.HttpContext.User.Identity.Name!;
         return identityName;
+    }
+
+    public List<UserDto> GetUsers(string[] userIds)
+    {
+        return userIds.Select(id => new UserDto
+        {
+            AvatarUrl = "https://cdn.quasar.dev/img/avatar.png",
+            DisplayName = $"user {id.Substring(id.Length - 3)}",
+            Id = id
+        }).ToList();
     }
 }
