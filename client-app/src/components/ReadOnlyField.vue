@@ -18,7 +18,7 @@ defineOptions({
 export interface ReadOnlyFieldProps {
   label: string;
   value?: string;
-  noValue: boolean;
+  noValue?: boolean;
 }
 
 withDefaults(defineProps<ReadOnlyFieldProps>(), {

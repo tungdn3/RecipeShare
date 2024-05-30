@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Management.Infrastructure.EF
+namespace Social.Core.Dto;
+
+public class LikeDto
 {
-    internal class Configurations
-    {
-    }
+    public int Id { get; set; }
+
+
 }

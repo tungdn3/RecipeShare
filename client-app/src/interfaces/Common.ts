@@ -7,3 +7,8 @@ export interface IPageResult<T> {
   hasPreviousPage: boolean;
   hasNextPage: boolean;
 }
+
+export interface ICountItem {
+  id: number;
+  count: number;
+}

@@ -400,3 +400,6 @@ FodyWeavers.xsd
 /Management/Management.API/Management.db
 /Management/Management.API/Management.db-shm
 /Management/Management.API/Management.db-wal
+/Social/Social.API/Social.db
+/Social/Social.API/Social.db-shm
+/Social/Social.API/Social.db-wal

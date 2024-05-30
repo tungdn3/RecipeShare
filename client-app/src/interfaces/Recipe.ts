@@ -4,8 +4,8 @@ export interface IRecipeCard {
   imageUrl: string;
   preparationMinutes: number;
   cookingMinutes: number;
-  nbOfLikes: number;
-  nbOfComments: number;
+  likeCount: number | undefined;
+  commentCount: number | undefined;
 }
 
 export interface IRecipeAdd {
