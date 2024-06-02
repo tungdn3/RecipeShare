@@ -1,4 +1,6 @@
-﻿using Social.Core.Dto;
+﻿using MassTransit;
+using Shared.IntegrationEvents;
+using Social.Core.Dto;
 using Social.Core.Entities;
 using Social.Core.Interfaces;
 
@@ -8,23 +10,35 @@ public class LikeService
 {
     private readonly ILikeRepository _likeRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public LikeService(ILikeRepository likeRepository, IUserRepository userRepository)
+    public LikeService(ILikeRepository likeRepository, IUserRepository userRepository, IPublishEndpoint publishEndpoint)
     {
         _likeRepository = likeRepository;
         _userRepository = userRepository;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<int> AddLike(LikeRequest request)
     {
+        string userId = _userRepository.GetCurrentUserId();
+        DateTime now = DateTime.UtcNow;
         var like = new Like
         {
-            LikedDate = DateTime.UtcNow,
+            LikedDate = now,
             RecipeId = request.RecipeId,
-            UserId = _userRepository.GetCurrentUserId(),
+            UserId = userId,
         };
 
-         await _likeRepository.Add(like);
+        int id = await _likeRepository.Add(like);
+
+        await _publishEndpoint.Publish(new LikeAdded
+        {
+            LikeId = id,
+            LikedAt = now,
+            UserId = userId,
+            RecipeId = request.RecipeId,
+        });
 
         return like.Id;
     }

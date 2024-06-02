@@ -1,10 +1,33 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using Social.Infrastructure.Extensions;
 
 namespace Social.API.Extensions;
 
 public static class DependencyInjection
 {
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IWebHostEnvironment environment, IConfiguration configuration)
+    {
+        string? sqliteConnectionString = configuration.GetConnectionString("DbContextSQLite");
+        if (string.IsNullOrWhiteSpace(sqliteConnectionString))
+        {
+            throw new InvalidOperationException("Missing SQLite connection string.");
+        }
+
+        services.AddSocialDbContext(environment.IsDevelopment(), sqliteConnectionString);
+        services.AddRepositories();
+
+        string? serviceBusConnectionString = configuration.GetConnectionString("AzureServiceBus");
+        if (string.IsNullOrEmpty(serviceBusConnectionString))
+        {
+            throw new InvalidOperationException("Missing Service Bus connection string.");
+        }
+
+        services.AddMassTransitServiceBus(serviceBusConnectionString);
+
+        return services;
+    }
+
     public static void AddOpenApi(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSwaggerGen(options =>

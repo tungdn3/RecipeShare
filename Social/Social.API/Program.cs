@@ -3,7 +3,6 @@ using Microsoft.IdentityModel.Tokens;
 using Social.API.Extensions;
 using Social.Core.Extensions;
 using Social.Infrastructure.EF;
-using Social.Infrastructure.Extensions;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,10 +47,7 @@ if ((isDevelopment && string.IsNullOrEmpty(devDbConnectionString)) || (!isDevelo
 }
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddInfrastructure(
-    isDevelopment,
-    devDbConnectionString!,
-    prodDbConnectionString!);
+builder.Services.AddInfrastructure(builder.Environment, builder.Configuration);
 
 var app = builder.Build();
 

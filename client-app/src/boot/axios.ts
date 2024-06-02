@@ -17,6 +17,9 @@ declare module '@vue/runtime-core' {
 const api = axios.create({ baseURL: 'https://localhost:7100' });
 const searchApi = axios.create({ baseURL: 'https://localhost:7200/search' });
 const socialApi = axios.create({ baseURL: 'https://localhost:7300/social' });
+const notificationApi = axios.create({
+  baseURL: 'https://localhost:7400/notification',
+});
 
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
@@ -30,4 +33,4 @@ export default boot(({ app }) => {
   //       so you can easily perform requests against your app's API
 });
 
-export { api, searchApi, socialApi };
+export { api, searchApi, socialApi, notificationApi };

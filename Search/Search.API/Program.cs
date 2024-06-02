@@ -1,5 +1,6 @@
 using Elastic.Clients.Elasticsearch;
 using Search.API;
+using Search.API.Extensions;
 using Search.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
