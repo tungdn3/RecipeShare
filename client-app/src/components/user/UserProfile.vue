@@ -18,8 +18,8 @@
       </q-btn>
     </div>
     <div v-if="isAuthenticated">
-      <q-btn round>
-        <q-avatar>
+      <q-btn round size="sm">
+        <q-avatar size="md">
           <img :src="user.picture" />
         </q-avatar>
         <q-menu>

@@ -7,7 +7,7 @@ using Search.API.Models;
 using Search.API.Repositories;
 using Search.API.Services;
 
-namespace Search.API;
+namespace Search.API.Extensions;
 
 public static class DependencyInjection
 {
@@ -69,7 +69,7 @@ public static class DependencyInjection
                 .PrettyJson();
 
             var client = new ElasticsearchClient(connectionSettings);
-               
+
             return client;
         });
     }

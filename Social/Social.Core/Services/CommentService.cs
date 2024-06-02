@@ -1,4 +1,6 @@
-﻿using Social.Core.Dto;
+﻿using MassTransit;
+using Shared.IntegrationEvents;
+using Social.Core.Dto;
 using Social.Core.Entities;
 using Social.Core.Exceptions;
 using Social.Core.Interfaces;
@@ -9,11 +11,13 @@ public class CommentService
 {
     private readonly ICommentRepository _commentRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public CommentService(ICommentRepository commentRepository, IUserRepository userRepository)
+    public CommentService(ICommentRepository commentRepository, IUserRepository userRepository, IPublishEndpoint publishEndpoint)
     {
         _commentRepository = commentRepository;
         _userRepository = userRepository;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<PageResultDto<CommentDto>> GetByRecipe(int recipeId, int pageNumber, int pageSize)
@@ -76,11 +80,12 @@ public class CommentService
         }
 
         var now = DateTime.UtcNow;
+        string commentAuthorId = _userRepository.GetCurrentUserId();
         Comment comment = new Comment
         {
             Content = request.Content,
             RecipeId = request.RecipeId,
-            UserId = _userRepository.GetCurrentUserId(),
+            UserId = commentAuthorId,
             Path = parent is not null ? parent.BuildChildrenPath() : string.Empty,
             CreatedAt = now,
             UpdatedAt = null,
@@ -88,6 +93,16 @@ public class CommentService
         };
 
         int id = await _commentRepository.Add(comment);
+
+        await _publishEndpoint.Publish(new CommentAdded
+        {
+            CommentId = id,
+            ParentCommentId = request.ParentId,
+            CommentedAt = now,
+            RecipeId = request.RecipeId,
+            UserId = commentAuthorId
+        });
+
         return id;
     }
 

@@ -10,7 +10,8 @@
 
         <q-toolbar-title>Recipe Share</q-toolbar-title>
 
-        <UserProfile />
+        <NotificationContainer />
+        <UserProfile class="q-ml-md" />
       </q-toolbar>
 
       <q-tabs align="center">
@@ -43,6 +44,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import UserProfile from '../components/user/UserProfile.vue';
+import NotificationContainer from 'src/components/notification/NotificationContainer.vue';
 
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
