@@ -53,8 +53,6 @@ var app = builder.Build();
 
 app.UseOpenApi(app.Configuration);
 
-app.UseHttpsRedirection();
-
 app.UseCors("AllowAny");
 
 app.UseAuthorization();

@@ -4,6 +4,7 @@ namespace Social.Core.Interfaces;
 
 public interface IUserRepository
 {
-    string GetCurrentUserId();
-    List<UserDto> GetUsers(string[] userIds);
+    Task<string> GetCurrentUserId();
+
+    Task<List<UserDto>> GetUsers(string[] userIds);
 }

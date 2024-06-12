@@ -119,7 +119,7 @@ async function fillCommentCounts() {
     return;
   }
   const result = await socialApi.post<ICountItem[]>(
-    'comments/recipes/count-comments',
+    'comments/count',
     recipeIds
   );
   recipes.value = recipes.value.map((x) => {

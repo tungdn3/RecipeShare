@@ -5,8 +5,6 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Management", "Management", "{04834618-0DB9-4EC9-8D3A-13AC1F165720}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "User", "User", "{2726988B-613D-4948-9974-BC85D407DF2E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Search", "Search", "{0047A815-6E25-4180-B9C0-E8CF4D2D314E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notification", "Notification", "{BA261816-5A98-40A0-9774-13F3980B72CC}"
@@ -31,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Social.Core", "Social\Socia
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Social.Infrastructure", "Social\Social.Infrastructure\Social.Infrastructure.csproj", "{57B12639-BA0D-49D0-A924-6F91F3B52EFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notification.Api", "Notification\Notification.Api\Notification.Api.csproj", "{39C1D235-5CCF-4839-9CA3-F8FE69765A75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notification.Api", "Notification\Notification.Api\Notification.Api.csproj", "{39C1D235-5CCF-4839-9CA3-F8FE69765A75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

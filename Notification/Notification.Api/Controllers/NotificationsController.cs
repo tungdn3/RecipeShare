@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Notification.Api.Data.Entities;
 using Notification.Api.Dtos;
 using Notification.Api.Services;
 

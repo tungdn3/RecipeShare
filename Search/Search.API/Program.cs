@@ -38,16 +38,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.UseCors("AllowFE");
-
 app.MapControllers();
-
 EnsureElasticSearchIndexCreated(app);
-
 app.Run();
 
 static void EnsureElasticSearchIndexCreated(WebApplication app)

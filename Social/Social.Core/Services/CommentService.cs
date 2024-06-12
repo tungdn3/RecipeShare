@@ -80,7 +80,7 @@ public class CommentService
         }
 
         var now = DateTime.UtcNow;
-        string commentAuthorId = _userRepository.GetCurrentUserId();
+        string commentAuthorId = await _userRepository.GetCurrentUserId();
         Comment comment = new Comment
         {
             Content = request.Content,
@@ -106,10 +106,10 @@ public class CommentService
         return id;
     }
 
-    public void FillUserInfo(PageResultDto<CommentDto> result)
+    public async Task FillUserInfo(PageResultDto<CommentDto> result)
     {
         string[] userIds = result.Items.Select(x => x.UserId).ToArray();
-        List<UserDto> users = _userRepository.GetUsers(userIds);
+        List<UserDto> users = await _userRepository.GetUsers(userIds);
         foreach (var item in result.Items)
         {
             var user = users.Find(x => x.Id == item.UserId);
@@ -129,7 +129,7 @@ public class CommentService
             return;
         }
 
-        if (comment.UserId != _userRepository.GetCurrentUserId())
+        if (comment.UserId != await _userRepository.GetCurrentUserId())
         {
             throw new ForbiddenException("You are not allowed to delete this comment.");
         }
@@ -145,7 +145,7 @@ public class CommentService
             throw new NotFoundException();
         }
 
-        if (comment.UserId != _userRepository.GetCurrentUserId())
+        if (comment.UserId != await _userRepository.GetCurrentUserId())
         {
             throw new ForbiddenException("You are not allowed to delete this comment.");
         }
