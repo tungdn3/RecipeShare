@@ -70,11 +70,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseExceptionHandler("/error");
-// app.UseHttpsRedirection();
 app.UseCors("AllowFE");
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

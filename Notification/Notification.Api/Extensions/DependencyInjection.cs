@@ -8,6 +8,7 @@ using Notification.Api.Data;
 using Notification.Api.Repositories;
 using Notification.Api.Services;
 using System.Security.Claims;
+using Shared.Auth0;
 
 namespace Notification.Api.Extensions;
 
@@ -16,10 +17,17 @@ public static class DependencyInjection
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<NotificationService>();
+        services.AddScoped<RecipeService>();
         services.AddScoped<UserRepository>();
         services.AddHttpContextAccessor();
         services.AddDbContext<NotificationDbContext>(options => options.UseSqlite(configuration.GetConnectionString("DbContextSQLite")));
         services.AddServiceBusConsumers(configuration);
+        services.AddAuth0Client(options =>
+        {
+            options.ClientId = configuration.GetValue<string>("Auth0:ClientId")!;
+            options.ClientSecret = configuration.GetValue<string>("Auth0:ClientSecret")!;
+            options.BaseUrl = $"https://{configuration.GetValue<string>("Auth0:Domain")}";
+        });
 
         return services;
     }

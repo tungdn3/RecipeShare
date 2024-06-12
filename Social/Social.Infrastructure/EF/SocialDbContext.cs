@@ -10,6 +10,8 @@ public class SocialDbContext : DbContext
 
     public DbSet<Comment> Comments { get; set; }
 
+    public DbSet<User> Users { get; set; }
+
     public SocialDbContext(DbContextOptions<SocialDbContext> options)
         : base(options)
     {
@@ -19,5 +21,6 @@ public class SocialDbContext : DbContext
     {
         new LikeConfiguration().Configure(modelBuilder.Entity<Like>());
         new CommentConfiguration().Configure(modelBuilder.Entity<Comment>());
+        new UserConfiguration().Configure(modelBuilder.Entity<User>());
     }
 }

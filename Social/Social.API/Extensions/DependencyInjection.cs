@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using Shared.Auth0;
 using Social.Infrastructure.Extensions;
 
 namespace Social.API.Extensions;
@@ -24,6 +25,12 @@ public static class DependencyInjection
         }
 
         services.AddMassTransitServiceBus(serviceBusConnectionString);
+        services.AddAuth0Client(options =>
+        {
+            options.ClientId = configuration.GetValue<string>("Auth0:ClientId")!;
+            options.ClientSecret = configuration.GetValue<string>("Auth0:ClientSecret")!;
+            options.BaseUrl = $"https://{configuration.GetValue<string>("Auth0:Domain")}";
+        });
 
         return services;
     }

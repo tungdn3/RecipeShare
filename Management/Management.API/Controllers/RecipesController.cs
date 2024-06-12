@@ -7,7 +7,7 @@ namespace Management.API.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("management/[controller]")]
+[Route("management/recipes")]
 public class RecipesController : ControllerBase
 {
     private readonly IRecipeService _recipeService;

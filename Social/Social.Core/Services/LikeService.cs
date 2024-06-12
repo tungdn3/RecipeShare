@@ -21,7 +21,7 @@ public class LikeService
 
     public async Task<int> AddLike(LikeRequest request)
     {
-        string userId = _userRepository.GetCurrentUserId();
+        string userId = await _userRepository.GetCurrentUserId();
         DateTime now = DateTime.UtcNow;
         var like = new Like
         {
@@ -50,7 +50,7 @@ public class LikeService
 
     public async Task<LikeDto?> GetRecipeLikeByCurrentUser(int recipeId)
     {
-        string userId = _userRepository.GetCurrentUserId();
+        string userId = await _userRepository.GetCurrentUserId();
         List<Like> likes = await _likeRepository.Search(recipeId, userId);
         return likes.Select(x => new LikeDto
         {
