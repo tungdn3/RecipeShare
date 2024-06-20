@@ -19,9 +19,17 @@ public class CategoryRepository : ICategoryRepository
         throw new NotImplementedException();
     }
 
-    public Task<int> Create(CategoryCreateDto dto)
+    public async Task<int> Create(CategoryCreateDto dto)
     {
-        throw new NotImplementedException();
+        var category = new Category
+        {
+            Name = dto.Name,
+            IsDeleted = false,
+        };
+
+        _dbContext.Categories.Add(category);
+        await _dbContext.SaveChangesAsync();
+        return category.Id;
     }
 
     public Task<bool> Exists(int id)

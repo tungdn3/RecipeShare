@@ -91,7 +91,7 @@
 
     <CommentList
       ref="commentList"
-      :recipe-id="1"
+      :recipe-id="id"
       :recipe-author-id="recipe?.userId ?? ''"
       class="q-mt-md"
       @count-changed="(val) => (commentCount = val)"

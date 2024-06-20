@@ -9,13 +9,27 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IWebHostEnvironment environment, IConfiguration configuration)
     {
-        string? sqliteConnectionString = configuration.GetConnectionString("DbContextSQLite");
-        if (string.IsNullOrWhiteSpace(sqliteConnectionString))
+        if (environment.IsDevelopment() )
         {
-            throw new InvalidOperationException("Missing SQLite connection string.");
+            string? sqliteConnectionString = configuration.GetConnectionString("DbContextSQLite");
+            if (string.IsNullOrWhiteSpace(sqliteConnectionString))
+            {
+                throw new InvalidOperationException("Missing SQLite connection string.");
+            }
+
+            services.AddSqlite(sqliteConnectionString);
+        }
+        else
+        {
+            string? connectionString = configuration.GetConnectionString("DbContextPostgres");
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException("Missing Postgres connection string.");
+            }
+
+            services.AddPostgres(connectionString);
         }
 
-        services.AddSocialDbContext(environment.IsDevelopment(), sqliteConnectionString);
         services.AddRepositories();
 
         string? serviceBusConnectionString = configuration.GetConnectionString("AzureServiceBus");

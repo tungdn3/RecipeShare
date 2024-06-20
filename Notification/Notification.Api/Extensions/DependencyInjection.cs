@@ -14,13 +14,21 @@ namespace Notification.Api.Extensions;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
         services.AddScoped<NotificationService>();
         services.AddScoped<RecipeService>();
         services.AddScoped<UserRepository>();
         services.AddHttpContextAccessor();
-        services.AddDbContext<NotificationDbContext>(options => options.UseSqlite(configuration.GetConnectionString("DbContextSQLite")));
+        if (env.IsDevelopment())
+        {
+            services.AddDbContext<NotificationDbContext>(options => options.UseSqlite(configuration.GetConnectionString("DbContextSQLite")));
+        }
+        else
+        {
+            services.AddDbContext<NotificationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DbContextPostgres")));
+        }
+
         services.AddServiceBusConsumers(configuration);
         services.AddAuth0Client(options =>
         {

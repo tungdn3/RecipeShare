@@ -22,7 +22,6 @@ public class RecipesController : ControllerBase
     [HttpGet(Name = "GetRecipes")]
     public async Task<IEnumerable<RecipeDto>> Get(string? title = null)
     {
-        await Task.Delay(2000);
         string userId = await _userService.GetCurrentUserId();
         RecipeDto[] recipes = await _recipeService.Get(userId, title);
         return recipes;
@@ -31,7 +30,6 @@ public class RecipesController : ControllerBase
     [HttpGet("{id}", Name = "GetById")]
     public async Task<RecipeDto?> GetById(int id)
     {
-        await Task.Delay(2000);
         string userId = await _userService.GetCurrentUserId();
         RecipeDto? recipe = await _recipeService.GetById(userId, id);
         return recipe;

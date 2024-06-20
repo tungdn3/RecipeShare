@@ -10,19 +10,15 @@ namespace Social.Infrastructure.Extensions;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddSocialDbContext(this IServiceCollection services,
-        bool isDevelopment,
-        string sqliteConnectionString)
+    public static IServiceCollection AddSqlite(this IServiceCollection services, string connectionString)
     {
-        if (isDevelopment)
-        {
-            services.AddDbContext<SocialDbContext>(options => options.UseSqlite(sqliteConnectionString));
-        }
-        else
-        {
-            // update later
-            services.AddDbContext<SocialDbContext>(options => options.UseSqlite(sqliteConnectionString));
-        }
+        services.AddDbContext<SocialDbContext>(options => options.UseSqlite(connectionString));
+        return services;
+    }
+
+    public static IServiceCollection AddPostgres(this IServiceCollection services, string connectionString)
+    {
+        services.AddDbContext<SocialDbContext>(options => options.UseNpgsql(connectionString));
         return services;
     }
 

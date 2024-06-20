@@ -62,12 +62,12 @@ public static class DependencyInjection
         if (isDevelopment)
         {
             services.AddDbContext<ManagementDbContext>(options =>
-                options.UseSqlite(configuration.GetConnectionString("ManagementDbContextSQLite")));
+                options.UseSqlite(configuration.GetConnectionString("DbContextSQLite")));
         }
         else
         {
             services.AddDbContext<ManagementDbContext>(options =>
-                options.UseSqlite(configuration.GetConnectionString("ManagementDbContextMSSQL")));
+                options.UseNpgsql(configuration.GetConnectionString("DbContextPostgres")));
         }
 
         services.AddScoped<ICategoryRepository, CategoryRepository>();
