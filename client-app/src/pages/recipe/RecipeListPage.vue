@@ -40,7 +40,7 @@ import { useMyRecipesStore } from 'src/stores/my-recipes-store';
 import { storeToRefs } from 'pinia';
 
 defineOptions({
-  name: 'RecipeList',
+  name: 'RecipeListPage',
 });
 
 const myRecipesStore = useMyRecipesStore();

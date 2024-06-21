@@ -37,6 +37,9 @@
         <q-spinner color="primary" size="3em" />
       </div>
     </div>
+    <div class="q-mt-lg q-px-md">
+      <RecipeList />
+    </div>
   </q-page>
 </template>
 
@@ -44,6 +47,7 @@
 import { IRecipeCard } from 'src/interfaces/Recipe';
 import RecipeCard from 'src/components/recipe/RecipeCard.vue';
 import SearchSuggestionList from 'src/components/SearchSuggestionList.vue';
+import RecipeList from 'src/components/recipe/RecipeList.vue';
 import { ref, watch } from 'vue';
 import { searchApi, socialApi } from 'boot/axios';
 import { ICountItem, IPageResult } from 'src/interfaces/Common';

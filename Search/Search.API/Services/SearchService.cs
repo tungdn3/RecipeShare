@@ -116,4 +116,45 @@ public class SearchService
         List<string> titles = response.Documents.Select(x => x.Title).ToList();
         return titles;
     }
+
+    public async Task<PageResultDto<SearchResultItemDto>> GetNewRecipes(int pageNumber, int pageSize)
+    {
+        var requestDescriptor = new SearchRequestDescriptor<Recipe>()
+            .Sort(x => x.Field(r => r.CreatedAt, new FieldSort { Order = SortOrder.Desc }))
+            .From((pageNumber - 1) * pageSize)
+            .Size(pageSize);
+
+        SearchResponse<Recipe> response = await _client.SearchAsync(requestDescriptor);
+
+        if (!response.IsValidResponse)
+        {
+            _logger.LogError("Failed to get latest recipes. pageNumber={PageNumber}, pageSize={PageSize}. Debug info: '{DebugInfo}'",
+                pageNumber, pageSize, response.DebugInformation);
+
+            return new PageResultDto<SearchResultItemDto>();
+        }
+
+        List<SearchResultItemDto> items = response.Documents.Select(x => new SearchResultItemDto
+        {
+            CategoryId = x.CategoryId,
+            Title = x.Title,
+            Description = x.Description,
+            CookingMinutes = x.CookingMinutes,
+            CreatedAt = x.CreatedAt,
+            Id = x.Id,
+            ImageUrl = _blobImageRepository.GetImageUrl(x.ImageFileName),
+            PreparationMinutes = x.PreparationMinutes,
+            PublishedAt = x.PublishedAt,
+            UpdatedAt = x.UpdatedAt,
+            UserId = x.UserId,
+        }).ToList();
+
+        return new PageResultDto<SearchResultItemDto>
+        {
+            Items = items,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            TotalCount = response.Total,
+        };
+    }
 }
