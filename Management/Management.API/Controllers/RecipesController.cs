@@ -20,11 +20,11 @@ public class RecipesController : ControllerBase
     }
 
     [HttpGet(Name = "GetRecipes")]
-    public async Task<IEnumerable<RecipeDto>> Get(string? title = null)
+    public async Task<PageResultDto<RecipeDto>> Get(string? title = null, int pageNumber = 1, int pageSize = 10)
     {
         string userId = await _userService.GetCurrentUserId();
-        RecipeDto[] recipes = await _recipeService.Get(userId, title);
-        return recipes;
+        PageResultDto<RecipeDto> result = await _recipeService.Get(userId, title, pageNumber, pageSize);
+        return result;
     }
 
     [HttpGet("{id}", Name = "GetById")]

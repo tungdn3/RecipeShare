@@ -6,7 +6,7 @@ public interface IRecipeService
 {
     Task<int> Create(string userId, RecipeCreateDto dto);
     
-    Task<RecipeDto[]> Get(string userId, string? title = null);
+    Task<PageResultDto<RecipeDto>> Get(string userId, string? title = null, int pageNumber = 1, int pageSize = 10);
 
     Task<RecipeDto?> GetById(string userId, int id);
 

@@ -1,4 +1,5 @@
-﻿using Management.Core.Entities;
+﻿using Management.Core.Dtos;
+using Management.Core.Entities;
 using Management.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,7 +27,7 @@ public class RecipeRepository : IRecipeRepository
         return recipe;
     }
 
-    public Task<Recipe[]> GetByUserId(string userId, string? title)
+    public async Task<PageResultDto<Recipe>> GetByUserId(string userId, string? title, int pageNumber = 1, int pageSize = 10)
     {
         var query = _context.Recipes
             .AsNoTracking()
@@ -37,7 +38,20 @@ public class RecipeRepository : IRecipeRepository
             query = query.Where(x => x.Title.Contains(title));
         }
 
-        return query.ToArrayAsync();
+        Recipe[] items = await query
+            .OrderByDescending(x => x.CreatedAt)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToArrayAsync();
+
+        int totalCount = await query.CountAsync();
+        return new PageResultDto<Recipe>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
     }
 
     public Task Update(Recipe recipe)

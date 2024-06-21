@@ -39,7 +39,7 @@ const items = ref<INotification[]>([]);
 
 let timer = setInterval(() => {
   getNotifications(1);
-}, 15000);
+}, 30000);
 
 async function getNotifications(pageNumber: number, shouldNotify = true) {
   if (!auth0.isAuthenticated) {

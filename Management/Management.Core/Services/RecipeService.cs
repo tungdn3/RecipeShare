@@ -55,17 +55,23 @@ public class RecipeService : IRecipeService
         return recipeId;
     }
 
-    public async Task<RecipeDto[]> Get(string userId, string? title = null)
+    public async Task<PageResultDto<RecipeDto>> Get(string userId, string? title = null, int pageNumber = 1, int pageSize = 10)
     {
-        Recipe[] entities = await _recipeRepository.GetByUserId(userId, title);
+        PageResultDto<Recipe> entityResult = await _recipeRepository.GetByUserId(userId, title, pageNumber, pageSize);
 
-        RecipeDto[] dtos = entities.Select(x =>
+        RecipeDto[] dtos = entityResult.Items.Select(x =>
         {
             string? imageUrl = !string.IsNullOrEmpty(x.ImageFileName) ? _imageRepository.GetImageUrl(x.ImageFileName!) : null;
             return x.ToDto(imageUrl);
         }).ToArray();
 
-        return dtos;
+        return new PageResultDto<RecipeDto>
+        {
+            Items = dtos,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            TotalCount = entityResult.TotalCount,
+        };
     }
 
     public async Task<RecipeDto?> GetById(string userId, int id)

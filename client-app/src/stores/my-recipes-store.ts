@@ -8,24 +8,33 @@ import {
   IRecipeCard,
 } from 'src/interfaces/Recipe';
 import { ref } from 'vue';
+import { IPageResult } from 'src/interfaces/Common';
 
 export const useMyRecipesStore = defineStore('my-recipes', () => {
   const auth0 = useAuth0();
   const recipes = ref<IRecipeCard[]>([]);
+  const recipePageResult = ref<IPageResult<IRecipeCard> | null>(null);
   const isLoading = ref(false);
 
-  async function getMyRecipes() {
+  async function getMyRecipes(pageNumber = 1) {
     isLoading.value = true;
     const accessToken = await auth0.getAccessTokenSilently();
     try {
-      console.log('--------- getting my recipes using axios');
-      const response = await api.get<IRecipeCard[]>('/management/recipes', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      recipes.value = response.data;
-      return recipes.value;
+      console.log('--------- getting my recipes using axios', pageNumber);
+      const response = await api.get<IPageResult<IRecipeCard>>(
+        `/management/recipes?pageSize=9&pageNumber=${pageNumber}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      recipePageResult.value = response.data;
+      recipes.value =
+        pageNumber === 1
+          ? response.data.items
+          : [...recipes.value, ...response.data.items];
+      return recipePageResult.value;
     } catch (e) {
       console.error(e);
       return [];
@@ -78,5 +87,13 @@ export const useMyRecipesStore = defineStore('my-recipes', () => {
   }
 
   getMyRecipes();
-  return { recipes, isLoading, getMyRecipes, getMyRecipeById, create, update };
+  return {
+    recipes,
+    recipePageResult,
+    isLoading,
+    getMyRecipes,
+    getMyRecipeById,
+    create,
+    update,
+  };
 });
