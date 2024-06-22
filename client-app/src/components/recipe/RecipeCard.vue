@@ -55,6 +55,7 @@ const props = defineProps({
   cookingMinutes: Number,
   nbOfLikes: Number,
   nbOfComments: Number,
+  clickToEdit: Boolean,
 });
 
 defineOptions({
@@ -64,7 +65,11 @@ defineOptions({
 const router = useRouter();
 
 function goToRecipeDetails() {
-  router.push({ path: `/my-recipes/${props.id}` });
+  if (props.clickToEdit) {
+    router.push({ path: `/my-recipes/${props.id}/edit` });
+  } else {
+    router.push({ path: `/recipes/${props.id}` });
+  }
 }
 </script>
 

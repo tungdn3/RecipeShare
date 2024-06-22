@@ -15,6 +15,7 @@
           :image-url="recipe.imageUrl"
           :nb-of-likes="recipe.likeCount"
           :nb-of-comments="recipe.commentCount"
+          :click-to-edit="true"
         />
       </div>
     </div>
@@ -40,7 +41,7 @@ import { useMyRecipesStore } from 'src/stores/my-recipes-store';
 import { storeToRefs } from 'pinia';
 
 defineOptions({
-  name: 'RecipeListPage',
+  name: 'MyRecipesPage',
 });
 
 const myRecipesStore = useMyRecipesStore();

@@ -1,5 +1,5 @@
 import { authGuard } from '@auth0/auth0-vue';
-import RecipeListPage from 'src/pages/recipe/RecipeListPage.vue';
+import MyRecipesPage from 'src/pages/recipe/MyRecipesPage.vue';
 import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -19,7 +19,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: '',
-        component: RecipeListPage,
+        component: MyRecipesPage,
       },
     ],
   },
