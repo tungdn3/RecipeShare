@@ -1,6 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-vue';
 import { defineStore } from 'pinia';
-import { api } from 'boot/axios';
+import { managementApi } from 'boot/axios';
 import {
   IRecipe,
   IRecipeAdd,
@@ -20,9 +20,8 @@ export const useMyRecipesStore = defineStore('my-recipes', () => {
     isLoading.value = true;
     const accessToken = await auth0.getAccessTokenSilently();
     try {
-      console.log('--------- getting my recipes using axios', pageNumber);
-      const response = await api.get<IPageResult<IRecipeCard>>(
-        `/management/recipes?pageSize=9&pageNumber=${pageNumber}`,
+      const response = await managementApi.get<IPageResult<IRecipeCard>>(
+        `recipes?pageSize=9&pageNumber=${pageNumber}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -45,7 +44,7 @@ export const useMyRecipesStore = defineStore('my-recipes', () => {
 
   async function getMyRecipeById(id: number): Promise<IRecipe | null> {
     const accessToken = await auth0.getAccessTokenSilently();
-    const response = await api.get(`/management/recipes/${id}`, {
+    const response = await managementApi.get(`recipes/${id}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -58,7 +57,7 @@ export const useMyRecipesStore = defineStore('my-recipes', () => {
 
   async function create(recipe: IRecipeAdd) {
     const accessToken = await auth0.getAccessTokenSilently();
-    const response = await api.post('/management/recipes', recipe, {
+    const response = await managementApi.post('recipes', recipe, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -73,7 +72,7 @@ export const useMyRecipesStore = defineStore('my-recipes', () => {
 
   async function update(id: number, recipe: IRecipeEdit) {
     const accessToken = await auth0.getAccessTokenSilently();
-    const response = await api.put(`/management/recipes/${id}`, recipe, {
+    const response = await managementApi.put(`recipes/${id}`, recipe, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
