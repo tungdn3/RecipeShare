@@ -15,7 +15,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: ':id',
-        component: () => import('pages/recipe/RecipeDetails.vue'),
+        component: () => import('pages/recipe/RecipeDetailsPage.vue'),
       },
       {
         path: '',
@@ -41,7 +41,7 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/IndexPage.vue') },
       {
         path: 'recipes/:id',
-        component: () => import('pages/recipe/RecipeDetails.vue'),
+        component: () => import('pages/recipe/RecipeDetailsPage.vue'),
       },
     ],
   },

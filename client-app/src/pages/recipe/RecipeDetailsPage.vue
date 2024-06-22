@@ -35,7 +35,7 @@
         />
         <ReadOnlyField
           label="Posted by"
-          :value="recipe ? recipe.userName : ''"
+          :value="recipe ? recipe.user.displayName : ''"
         />
 
         <div class="q-my-md"></div>
@@ -92,7 +92,7 @@
     <CommentList
       ref="commentList"
       :recipe-id="id"
-      :recipe-author-id="recipe?.userId ?? ''"
+      :recipe-author-id="recipe?.user.id ?? ''"
       class="q-mt-md"
       @count-changed="(val) => (commentCount = val)"
     />
@@ -113,7 +113,7 @@ import { useAuth0 } from '@auth0/auth0-vue';
 import { ICountItem } from 'src/interfaces/Common';
 
 defineOptions({
-  name: 'RecipeDetails',
+  name: 'RecipeDetailsPage',
 });
 
 const route = useRoute();

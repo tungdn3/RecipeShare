@@ -10,6 +10,8 @@ public class ManagementDbContext : DbContext
 
     public DbSet<Recipe> Recipes { get; set; }
 
+    public DbSet<User> Users { get; set; }
+
     public ManagementDbContext(DbContextOptions<ManagementDbContext> options)
         : base(options)
     {
@@ -19,5 +21,6 @@ public class ManagementDbContext : DbContext
     {
         new CategoryConfiguration().Configure(modelBuilder.Entity<Category>());
         new RecipeConfiguration().Configure(modelBuilder.Entity<Recipe>());
+        new UserConfiguration().Configure(modelBuilder.Entity<User>());
     }
 }

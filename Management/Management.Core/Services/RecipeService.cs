@@ -20,6 +20,7 @@ public class RecipeService : IRecipeService
     private readonly IValidator<RecipePublishDto> _publishValidator;
     private readonly IValidator<RecipeUpdateDto> _updateValidator;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IUserRepository _userRepository;
 
     public RecipeService(
         ILogger<RecipeService> logger,
@@ -29,7 +30,8 @@ public class RecipeService : IRecipeService
         IValidator<RecipePublishDto> publishValidator,
         IValidator<RecipeUpdateDto> updateValidator,
         IImageRepository imageRepository,
-        IPublishEndpoint publishEndpoint)
+        IPublishEndpoint publishEndpoint,
+        IUserRepository userRepository)
     {
         _logger = logger;
         _recipeRepository = recipeRepository;
@@ -39,6 +41,7 @@ public class RecipeService : IRecipeService
         _updateValidator = updateValidator;
         _imageRepository = imageRepository;
         _publishEndpoint = publishEndpoint;
+        _userRepository = userRepository;
     }
 
     public async Task<int> Create(string userId, RecipeCreateDto dto)
@@ -59,11 +62,15 @@ public class RecipeService : IRecipeService
     {
         PageResultDto<Recipe> entityResult = await _recipeRepository.GetByUserId(userId, title, pageNumber, pageSize);
 
-        RecipeDto[] dtos = entityResult.Items.Select(x =>
+        var dtoTasks = entityResult.Items.Select(async x =>
         {
             string? imageUrl = !string.IsNullOrEmpty(x.ImageFileName) ? _imageRepository.GetImageUrl(x.ImageFileName!) : null;
-            return x.ToDto(imageUrl);
-        }).ToArray();
+            Category? category = x.CategoryId.HasValue ? await _categoryRepository.GetById(x.CategoryId.Value) : null;
+            UserDto user = await _userRepository.GetUser(userId);
+            return x.ToDto(imageUrl, category?.Name, user);
+        });
+
+        var dtos = await Task.WhenAll(dtoTasks);
 
         return new PageResultDto<RecipeDto>
         {
@@ -83,7 +90,9 @@ public class RecipeService : IRecipeService
         }
 
         string? imageUrl = !string.IsNullOrEmpty(entity.ImageFileName) ? _imageRepository.GetImageUrl(entity.ImageFileName!) : null;
-        return entity.ToDto(imageUrl);
+        Category? category = entity.CategoryId.HasValue ? await _categoryRepository.GetById(entity.CategoryId.Value) : null;
+        UserDto user = await _userRepository.GetUser(userId);
+        return entity.ToDto(imageUrl, category?.Name, user);
     }
 
     public async Task Publish(RecipePublishDto dto)

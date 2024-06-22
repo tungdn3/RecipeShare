@@ -9,6 +9,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Shared.Auth0;
 using Shared.IntegrationEvents;
 
 namespace Management.API;
@@ -83,6 +84,14 @@ public static class DependencyInjection
         {
             options.ConnectionString = azureStorageConnectionString;
             options.ImageBlobContainerName = configuration["AzureStorage:ImageBlobContainerName"]!;
+        });
+
+        services.AddUserRepository();
+        services.AddAuth0Client(options =>
+        {
+            options.ClientId = configuration.GetValue<string>("Auth0:ClientId")!;
+            options.ClientSecret = configuration.GetValue<string>("Auth0:ClientSecret")!;
+            options.BaseUrl = $"https://{configuration.GetValue<string>("Auth0:Domain")}";
         });
 
         return services;
