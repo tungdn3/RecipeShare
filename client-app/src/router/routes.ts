@@ -1,5 +1,5 @@
 import { authGuard } from '@auth0/auth0-vue';
-import RecipeList from 'src/pages/recipe/RecipeList.vue';
+import MyRecipesPage from 'src/pages/recipe/MyRecipesPage.vue';
 import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -15,11 +15,11 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: ':id',
-        component: () => import('pages/recipe/RecipeDetails.vue'),
+        component: () => import('pages/recipe/RecipeDetailsPage.vue'),
       },
       {
         path: '',
-        component: RecipeList,
+        component: MyRecipesPage,
       },
     ],
   },
@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
         path: 'settings',
         component: () => import('pages/user/SettingsPage.vue'),
       },
-      { path: '', component: () => import('pages/user/SettingPage.vue') },
+      { path: '', component: () => import('pages/user/SettingsPage.vue') },
     ],
   },
   {
@@ -41,7 +41,7 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/IndexPage.vue') },
       {
         path: 'recipes/:id',
-        component: () => import('pages/recipe/RecipeDetails.vue'),
+        component: () => import('pages/recipe/RecipeDetailsPage.vue'),
       },
     ],
   },

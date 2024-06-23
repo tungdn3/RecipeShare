@@ -1,3 +1,5 @@
+import { IUser } from './Common';
+
 export interface IRecipeCard {
   id: number;
   title: string;
@@ -45,8 +47,7 @@ export interface IRecipe {
   cookingMinutes: number;
   ingredients: string[];
   instructions: string;
-  userId: string;
-  userName: string;
+  user: IUser;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date;

@@ -1,0 +1,300 @@
+services:
+  setup:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs
+    user: "0"
+    command: >
+      bash -c '
+        if [ x${ELASTIC_PASSWORD} == x ]; then
+          echo "Set the ELASTIC_PASSWORD environment variable in the .env file";
+          exit 1;
+        elif [ x${KIBANA_PASSWORD} == x ]; then
+          echo "Set the KIBANA_PASSWORD environment variable in the .env file";
+          exit 1;
+        fi;
+        if [ ! -f config/certs/ca.zip ]; then
+          echo "Creating CA";
+          bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
+          unzip config/certs/ca.zip -d config/certs;
+        fi;
+        if [ ! -f config/certs/certs.zip ]; then
+          echo "Creating certs";
+          echo -ne \
+          "instances:\n"\
+          "  - name: es01\n"\
+          "    dns:\n"\
+          "      - es01\n"\
+          "      - localhost\n"\
+          "    ip:\n"\
+          "      - 127.0.0.1\n"\
+          "  - name: kibana\n"\
+          "    dns:\n"\
+          "      - kibana\n"\
+          "      - localhost\n"\
+          "    ip:\n"\
+          "      - 127.0.0.1\n"\
+          > config/certs/instances.yml;
+          bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
+          unzip config/certs/certs.zip -d config/certs;
+        fi;
+        echo "Setting file permissions"
+        chown -R root:root config/certs;
+        find . -type d -exec chmod 750 \{\} \;;
+        find . -type f -exec chmod 640 \{\} \;;
+        echo "Waiting for Elasticsearch availability";
+        until curl -s --cacert config/certs/ca/ca.crt https://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
+        echo "Setting kibana_system password";
+        until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+        echo "All done!";
+      '
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f config/certs/es01/es01.crt ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+
+
+  gateway:
+    image: tungdn3/recipeshare-gateway:0.0.1
+    build:
+      context: .
+      dockerfile: Gateway/Dockerfile
+    ports:
+      - 7000:8080
+    networks:
+      - backend
+      - frontend
+    depends_on:
+      - management-api
+      - search-api
+      - social-api
+      - notification-api
+    environment:
+      - ReverseProxy__Clusters__management__Destinations__destination1__Address=http://management-api:8080/
+      - ReverseProxy__Clusters__search__Destinations__destination1__Address=http://search-api:8080/
+      - ReverseProxy__Clusters__social__Destinations__destination1__Address=http://social-api:8080/
+      - ReverseProxy__Clusters__notification__Destinations__destination1__Address=http://notification-api:8080/
+
+
+  management-db:
+    image: postgres:12
+    container_name: management-db-dev
+    volumes: 
+      - management-db-data:/var/lib/postgresql/data
+    ports:
+      - 5432
+    networks:
+      - management
+    environment:
+      - POSTGRES_DB=management
+      - POSTGRES_PASSWORD=mysecretpassword
+
+  management-api:
+    image: tungdn3/recipeshare-management-api:0.0.6
+    build:
+      context: .
+      dockerfile: Management/Management.API/Dockerfile
+    container_name: management-api-dev
+    ports:
+      - 8080
+    networks:
+      - backend
+      - management
+    depends_on:
+      - management-db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__DbContextPostgres=host=management-db;Port=5432;Database=management;User Id=postgres;Password=mysecretpassword
+      - ConnectionStrings__AzureServiceBus=Endpoint=sb://sbns-recipe-share.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=nspiX1EiSMlGkGZGYk+1lUNSMizPfw+0o+ASbJIMRRc=
+      - AzureStorage__ConnectionString=DefaultEndpointsProtocol=https;AccountName=recipeshare;AccountKey=4ZqVH7npQIQlEJ/OmJ3Phdeikp28ekVx3AfMbEAwrrBp/9119BtpH0QVKwAfqIWAwknfRrfAE92R+AStBWpYAA==;EndpointSuffix=core.windows.net
+      
+
+  search-api:
+    image: tungdn3/recipeshare-search-api:0.0.6
+    build:
+      context: .
+      dockerfile: Search/Search.API/Dockerfile
+    container_name: search-api-dev
+    ports:
+      - 8080
+    networks:
+      - backend
+    depends_on:
+      es01:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__DbContextPostgres=host=notification-db;Port=5432;Database=notification;User Id=postgres;Password=mysecretpassword
+      - ConnectionStrings__AzureServiceBus=Endpoint=sb://sbns-recipe-share.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=nspiX1EiSMlGkGZGYk+1lUNSMizPfw+0o+ASbJIMRRc=
+      - ElasticSearch__Host=http://es01:9200
+      - ElasticSearch__UserName=elastic
+      - ElasticSearch__Password=changeme
+      - AzureStorage__ConnectionString=DefaultEndpointsProtocol=https;AccountName=recipeshare;AccountKey=4ZqVH7npQIQlEJ/OmJ3Phdeikp28ekVx3AfMbEAwrrBp/9119BtpH0QVKwAfqIWAwknfRrfAE92R+AStBWpYAA==;EndpointSuffix=core.windows.net
+
+
+  notification-db:
+    image: postgres:12
+    container_name: notification-db-dev
+    volumes: 
+      - notification-db-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - notification
+    environment:
+      - POSTGRES_DB=notification
+      - POSTGRES_PASSWORD=mysecretpassword
+
+  notification-api:
+    image: tungdn3/recipeshare-notification-api:1.0.1
+    build:
+      context: .
+      dockerfile: Notification/Notification.Api/Dockerfile
+    container_name: notification-api-dev
+    ports:
+      - 8080
+    networks:
+      - backend
+      - notification
+    depends_on:
+      - notification-db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__DbContextPostgres=host=notification-db;Port=5432;Database=notification;User Id=postgres;Password=mysecretpassword
+      - ConnectionStrings__AzureServiceBus=Endpoint=sb://sbns-recipe-share.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=nspiX1EiSMlGkGZGYk+1lUNSMizPfw+0o+ASbJIMRRc=
+      
+
+  social-db:
+    image: postgres:12
+    container_name: social-db-dev
+    volumes: 
+      - social-db-data:/var/lib/postgresql/data
+    ports:
+      - 5432
+    networks:
+      - social
+    environment:
+      - POSTGRES_DB=social
+      - POSTGRES_PASSWORD=mysecretpassword
+
+  social-api:
+    image: tungdn3/recipeshare-social-api:0.0.1
+    build:
+      context: .
+      dockerfile: Social/Social.API/Dockerfile
+    container_name: social-api-dev
+    networks:
+      - backend
+      - social
+    ports:
+      - 8080
+    depends_on:
+      - social-db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__DbContextPostgres=host=social-db;Port=5432;Database=social;User Id=postgres;Password=mysecretpassword
+      - ConnectionStrings__AzureServiceBus=Endpoint=sb://sbns-recipe-share.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=nspiX1EiSMlGkGZGYk+1lUNSMizPfw+0o+ASbJIMRRc=
+      - Auth0__Domain=tungdev.au.auth0.com
+      - Auth0__Audience=https://dev-recipe-share.com
+      - Auth0__ClientId=xhG3qBbR9Ht3LHnQyG4V3yE4TAKZF9SX
+      - Auth0__ClientSecret=fWB2TFOXNL6slW0Dx-Aedn4jFliMPNvL0pnlH2-a4Rn10cbTnSFdmhnfelcHut3f
+
+
+  client-app:
+    image: tungdn3/recipeshare-client-app:0.0.9
+    build:
+      context: ./client-app
+      dockerfile: Dockerfile
+    container_name: client-app-dev
+    ports:
+      - 9000:80
+    networks:
+      - frontend
+    depends_on:
+      - gateway
+
+
+  es01:
+    depends_on:
+      setup:
+        condition: service_healthy
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
+    labels:
+      co.elastic.logs/module: elasticsearch
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs
+      - esdata01:/usr/share/elasticsearch/data
+    ports:
+      - ${ES_PORT}:9200
+    networks:
+      - backend
+    environment:
+      - node.name=es01
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.http.ssl.key=certs/es01/es01.key
+      - xpack.security.http.ssl.certificate=certs/es01/es01.crt
+      - xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.security.transport.ssl.key=certs/es01/es01.key
+      - xpack.security.transport.ssl.certificate=certs/es01/es01.crt
+      - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.license.self_generated.type=${LICENSE}
+    mem_limit: ${ES_MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s --cacert config/certs/ca/ca.crt http://localhost:9200 | grep -q 'missing authentication credentials'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+
+volumes:
+  management-db-data:
+    name: management-db-dev-data
+  notification-db-data:
+    name: notification-db-dev-data
+  social-db-data:
+    name: social-db-dev-data
+  search-db-data:
+    name: search-db-dev-data
+  certs:
+    driver: local
+  esdata01:
+    driver: local
+
+
+networks:
+  frontend:
+    name: recipeshare-network-frontend
+    driver: bridge
+  backend:
+    name: recipeshare-network-backend
+    driver: bridge
+  management:
+    name: recipeshare-network-management
+    driver: bridge
+  social:
+    name: recipeshare-network-social
+    driver: bridge
+  notification:
+    name: recipeshare-network-notification
+    driver: bridge
+    

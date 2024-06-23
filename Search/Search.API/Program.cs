@@ -54,7 +54,9 @@ static void EnsureElasticSearchIndexCreated(WebApplication app)
     }
     catch (Exception ex)
     {
+        var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+        var elsHost = configuration["ElasticSearch:Host"];
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred creating ElasticSearch index.");
+        logger.LogError(ex, $"An error occurred creating ElasticSearch index. Host={elsHost}");
     }
 }

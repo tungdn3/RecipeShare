@@ -11,37 +11,30 @@ namespace Management.API.Controllers;
 public class RecipesController : ControllerBase
 {
     private readonly IRecipeService _recipeService;
-    private readonly IUserService _userService;
 
-    public RecipesController(IRecipeService recipeService, IUserService userService)
+    public RecipesController(IRecipeService recipeService)
     {
         _recipeService = recipeService;
-        _userService = userService;
     }
 
     [HttpGet(Name = "GetRecipes")]
-    public async Task<IEnumerable<RecipeDto>> Get(string? title = null)
+    public async Task<PageResultDto<RecipeDto>> Get(string? title = null, int pageNumber = 1, int pageSize = 10)
     {
-        await Task.Delay(2000);
-        string userId = await _userService.GetCurrentUserId();
-        RecipeDto[] recipes = await _recipeService.Get(userId, title);
-        return recipes;
+        PageResultDto<RecipeDto> result = await _recipeService.GetByCurrentUser(title, pageNumber, pageSize);
+        return result;
     }
 
     [HttpGet("{id}", Name = "GetById")]
     public async Task<RecipeDto?> GetById(int id)
     {
-        await Task.Delay(2000);
-        string userId = await _userService.GetCurrentUserId();
-        RecipeDto? recipe = await _recipeService.GetById(userId, id);
+        RecipeDto? recipe = await _recipeService.GetById(id);
         return recipe;
     }
 
     [HttpPost(Name = "CreateRecipe")]
     public async Task<int> Create([FromBody] RecipeCreateDto dto)
     {
-        string userId = await _userService.GetCurrentUserId();
-        int recipeId = await _recipeService.Create(userId, dto);
+        int recipeId = await _recipeService.Create(dto);
         return recipeId;
     }
 

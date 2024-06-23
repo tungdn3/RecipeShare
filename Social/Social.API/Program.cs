@@ -35,17 +35,7 @@ builder.Services
     });
 
 builder.Services.AddOpenApi(builder.Configuration);
-
 builder.Services.AddCore();
-
-bool isDevelopment = builder.Environment.IsDevelopment();
-string? devDbConnectionString = builder.Configuration.GetConnectionString("DbContextSQLite");
-string? prodDbConnectionString = builder.Configuration.GetConnectionString("DbContextSQL");
-if ((isDevelopment && string.IsNullOrEmpty(devDbConnectionString)) || (!isDevelopment && string.IsNullOrEmpty(prodDbConnectionString)))
-{
-    throw new InvalidOperationException("Missing Db connection string.");
-}
-
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddInfrastructure(builder.Environment, builder.Configuration);
 

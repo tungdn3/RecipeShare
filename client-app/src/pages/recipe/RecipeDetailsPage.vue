@@ -1,8 +1,8 @@
 <template>
-  <q-page class="q-pa-sm">
+  <q-page class="q-pa-sm q-mb-xl">
     <h4>{{ recipe?.title }}</h4>
     <div class="row">
-      <div v-if="recipe" class="col-12 col-md-8 q-pr-sm">
+      <div v-if="recipe" class="col-12 col-lg-8 col-md-7 q-pr-sm">
         <div class="row">
           <q-img :src="recipe.imageUrl" fit="cover"></q-img>
         </div>
@@ -13,10 +13,10 @@
           {{ recipe.instructions }}
         </div>
       </div>
-      <div v-else class="col-12 col-md-8 row justify-center">
+      <div v-else class="col-12 col-lg-8 col-md-7 row justify-center">
         <q-spinner color="secondary" size="3rem" />
       </div>
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-lg-4 col-md-5">
         <ReadOnlyField
           class="q-pt-none"
           label="Preparation time"
@@ -35,7 +35,7 @@
         />
         <ReadOnlyField
           label="Posted by"
-          :value="recipe ? recipe.userName : ''"
+          :value="recipe ? recipe.user.displayName : ''"
         />
 
         <div class="q-my-md"></div>
@@ -91,8 +91,8 @@
 
     <CommentList
       ref="commentList"
-      :recipe-id="1"
-      :recipe-author-id="recipe?.userId ?? ''"
+      :recipe-id="id"
+      :recipe-author-id="recipe?.user.id ?? ''"
       class="q-mt-md"
       @count-changed="(val) => (commentCount = val)"
     />
@@ -113,7 +113,7 @@ import { useAuth0 } from '@auth0/auth0-vue';
 import { ICountItem } from 'src/interfaces/Common';
 
 defineOptions({
-  name: 'RecipeDetails',
+  name: 'RecipeDetailsPage',
 });
 
 const route = useRoute();

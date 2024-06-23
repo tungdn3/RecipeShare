@@ -26,7 +26,6 @@ public class CommentsController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        await Task.Delay(2000);
         return await _commentService.GetByRecipe(recipeId, pageNumber, pageSize);
     }
 
@@ -37,7 +36,6 @@ public class CommentsController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        await Task.Delay(2000);
         return await _commentService.GetReplies(id, pageNumber, pageSize);
     }
 
@@ -55,21 +53,18 @@ public class CommentsController : ControllerBase
     [HttpPost]
     public async Task<int> Add([FromBody] CommentRequest request)
     {
-        await Task.Delay(2000);
         return await _commentService.Add(request);
     }
 
     [HttpPut("{id}")]
     public async Task Edit(int id, [FromBody] EditCommentRequest request)
     {
-        await Task.Delay(2000);
         await _commentService.Edit(id, request);
     }
 
     [HttpDelete("{id}", Name = "DeleteComment")]
     public async Task Delete(int id)
     {
-        await Task.Delay(2000);
         await _commentService.Delete(id);
     }
 }

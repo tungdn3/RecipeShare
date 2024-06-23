@@ -19,9 +19,17 @@ public class CategoryRepository : ICategoryRepository
         throw new NotImplementedException();
     }
 
-    public Task<int> Create(CategoryCreateDto dto)
+    public async Task<int> Create(CategoryCreateDto dto)
     {
-        throw new NotImplementedException();
+        var category = new Category
+        {
+            Name = dto.Name,
+            IsDeleted = false,
+        };
+
+        _dbContext.Categories.Add(category);
+        await _dbContext.SaveChangesAsync();
+        return category.Id;
     }
 
     public Task<bool> Exists(int id)
@@ -44,6 +52,11 @@ public class CategoryRepository : ICategoryRepository
     public Task<Category?> GetById(int id)
     {
         return _dbContext.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    public Task<List<Category>> GetByIds(IEnumerable<int> ids)
+    {
+        return _dbContext.Categories.AsNoTracking().Where(x => ids.Contains(x.Id)).ToListAsync();
     }
 
     public Task<Category?> GetByName(string name)

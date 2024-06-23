@@ -14,7 +14,7 @@
     :class="{ deleting: deleting }"
   >
     <div class="">
-      <q-avatar size="lg">
+      <q-avatar size="md">
         <img :src="avatarUrl" />
       </q-avatar>
     </div>

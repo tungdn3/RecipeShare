@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col-12 row items-center">
-      <q-avatar size="lg">
+      <q-avatar size="md">
         <img :src="currentUserAvatarUrl" />
       </q-avatar>
       <q-input

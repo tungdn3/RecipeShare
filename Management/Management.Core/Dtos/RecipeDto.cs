@@ -24,7 +24,7 @@ public class RecipeDto
 
     public string Instructions { get; set; } = string.Empty;
 
-    public string UserId { get; set; } = string.Empty;
+    public UserDto? User { get; set; }
 
     public bool IsPublished { get; set; }
 

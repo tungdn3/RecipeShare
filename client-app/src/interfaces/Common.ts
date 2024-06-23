@@ -12,3 +12,9 @@ export interface ICountItem {
   id: number;
   count: number;
 }
+
+export interface IUser {
+  id: string;
+  displayName: string;
+  avatarUrl: string;
+}

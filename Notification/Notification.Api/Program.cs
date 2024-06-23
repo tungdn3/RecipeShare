@@ -18,7 +18,7 @@ builder.Services.AddCors(options =>
         .AllowAnyOrigin()
     );
 });
-builder.Services.AddServices(builder.Configuration);
+builder.Services.AddServices(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 

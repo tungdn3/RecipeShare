@@ -1,0 +1,57 @@
+# services: 
+  # gateway:
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Production
+  #     - ASPNETCORE_HTTP_PORTS=8080
+  #     # - ASPNETCORE_HTTPS_PORTS=8081
+  #     # - ReverseProxy__Clusters__management__Destinations__destination1__Address="http://management-api:7101/"
+  #     # - ReverseProxy__Clusters__search__Destinations__destination1__Address=http://search-api:7201/
+  #     # - ReverseProxy__Clusters__social__Destinations__destination1__Address="http://social-api:7301/"
+  #     # - ReverseProxy__Clusters__notification__Destinations__destination1__Address="http://notification-api:7401/"
+  #   ports:
+  #     - "8080"
+  #     # - "8081"
+  #   volumes:
+  #     - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+  #     - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+  
+  
+  # notification.api:
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_HTTP_PORTS=8080
+  #     - ASPNETCORE_HTTPS_PORTS=8081
+  #   ports:
+  #     - "8080"
+  #     - "8081"
+  #   volumes:
+  #     - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+  #     - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  # search-api:
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Production
+  #     - ASPNETCORE_HTTP_PORTS=8080
+  #     # - ASPNETCORE_HTTPS_PORTS=8081
+  #     - ElasticSearch__Host=http://es01:9200
+  #     - ElasticSearch__UserName=elastic
+  #     - ElasticSearch__Password=changeme
+  #     - AzureStorage__ConnectionString="DefaultEndpointsProtocol=https;AccountName=recipeshare;AccountKey=4ZqVH7npQIQlEJ/OmJ3Phdeikp28ekVx3AfMbEAwrrBp/9119BtpH0QVKwAfqIWAwknfRrfAE92R+AStBWpYAA==;EndpointSuffix=core.windows.net"
+  #   ports:
+  #     - 7201:8080
+  #     # - "8081"
+  #   volumes:
+  #     - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+  #     - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  # social.api:
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_HTTP_PORTS=8080
+  #     - ASPNETCORE_HTTPS_PORTS=8081
+  #   ports:
+  #     - "8080"
+  #     - "8081"
+  #   volumes:
+  #     - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+  #     - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro

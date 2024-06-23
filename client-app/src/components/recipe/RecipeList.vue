@@ -1,9 +1,9 @@
 <template>
-  <q-page class="q-pa-sm">
-    <h4 class="text-primary">My Recipes</h4>
-    <div v-if="!isLoading" class="row">
+  <div class="row">
+    <div class="col-12 text-h4 text-primary">New Posts</div>
+    <div class="col-12 row">
       <div
-        class="col-12 col-sm-6 col-md-4 q-px-sm q-py-md"
+        class="col-12 col-sm-4 col-md-4 col-lg-3 q-px-sm q-py-md"
         v-for="recipe in recipes"
         :key="recipe.id"
       >
@@ -18,24 +18,21 @@
         />
       </div>
     </div>
-    <div v-else>
+    <div v-if="isLoading">
       <q-spinner color="primary" size="3em" />
     </div>
-    <div class="row justify-center q-my-md">
-      <q-btn color="primary">Load More</q-btn>
-    </div>
-  </q-page>
+  </div>
 </template>
 
-<script setup lang="ts">
-import RecipeCard from 'src/components/recipe/RecipeCard.vue';
-import { useMyRecipesStore } from 'src/stores/my-recipes-store';
+<script setup>
+import { useNewRecipesStore } from 'src/stores/new-recipes-store';
 import { storeToRefs } from 'pinia';
+import RecipeCard from 'src/components/recipe/RecipeCard.vue';
 
 defineOptions({
   name: 'RecipeList',
 });
 
-const myRecipesStore = useMyRecipesStore();
-const { recipes, isLoading } = storeToRefs(myRecipesStore);
+const newRecipesStore = useNewRecipesStore();
+const { recipes, isLoading } = storeToRefs(newRecipesStore);
 </script>

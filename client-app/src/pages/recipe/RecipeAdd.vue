@@ -175,7 +175,7 @@
 import { useAuth0 } from '@auth0/auth0-vue';
 import { storeToRefs } from 'pinia';
 import { Notify, QForm, QUploader } from 'quasar';
-import { api } from 'src/boot/axios';
+import { managementApi } from 'src/boot/axios';
 import { useCategoryStore } from 'src/stores/category-store';
 import { useMyRecipesStore } from 'src/stores/my-recipes-store';
 import { computed, ref } from 'vue';
@@ -271,7 +271,7 @@ async function uploadPhotos() {
     formData.append('files', file);
   }
 
-  const response = await api.post('/management/images', formData, {
+  const response = await managementApi.post('images', formData, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

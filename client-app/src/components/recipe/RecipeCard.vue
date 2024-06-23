@@ -1,7 +1,12 @@
 <template>
   <div class="recipe-card" @click="goToRecipeDetails">
     <q-card>
-      <q-img :src="props.imageUrl" fit="cover" class="recipe-image" />
+      <q-img
+        :src="props.imageUrl"
+        fit="cover"
+        class="recipe-image"
+        spinner-color="primary"
+      />
 
       <q-card-section class="q-pt-md q-pb-sm text-primary">
         <div class="text-h6 recipe-title">{{ props.title }}</div>
@@ -55,6 +60,7 @@ const props = defineProps({
   cookingMinutes: Number,
   nbOfLikes: Number,
   nbOfComments: Number,
+  clickToEdit: Boolean,
 });
 
 defineOptions({
@@ -64,7 +70,11 @@ defineOptions({
 const router = useRouter();
 
 function goToRecipeDetails() {
-  router.push({ path: `/my-recipes/${props.id}` });
+  if (props.clickToEdit) {
+    router.push({ path: `/my-recipes/${props.id}/edit` });
+  } else {
+    router.push({ path: `/recipes/${props.id}` });
+  }
 }
 </script>
 

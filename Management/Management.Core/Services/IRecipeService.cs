@@ -4,11 +4,11 @@ namespace Management.Core.Services;
 
 public interface IRecipeService
 {
-    Task<int> Create(string userId, RecipeCreateDto dto);
+    Task<int> Create(RecipeCreateDto dto);
     
-    Task<RecipeDto[]> Get(string userId, string? title = null);
+    Task<PageResultDto<RecipeDto>> GetByCurrentUser(string? title = null, int pageNumber = 1, int pageSize = 10);
 
-    Task<RecipeDto?> GetById(string userId, int id);
+    Task<RecipeDto?> GetById(int id);
 
     Task Publish(RecipePublishDto dto);
     

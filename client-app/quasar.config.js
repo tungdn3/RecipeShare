@@ -10,6 +10,7 @@
 
 const { configure } = require('quasar/wrappers');
 const path = require('path');
+const PARSER = require('./variables/parser')();
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -54,7 +55,7 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: PARSER,
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,

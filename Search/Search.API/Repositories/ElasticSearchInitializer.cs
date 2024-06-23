@@ -9,7 +9,11 @@ public static class ElasticSearchInitializer
     public static void EnsureIndexCreated(ElasticsearchClient client, string indexName)
     {
         var response = client.Indices.ExistsAsync(indexName).Result;
-        
+        if (response.ApiCallDetails.HttpStatusCode != 200 && response.ApiCallDetails.HttpStatusCode != 404)
+        {
+            throw new InvalidOperationException($"Failed to check if index '{indexName}' exists. Debug info: {response.DebugInformation}");
+        }
+
         if (!response.Exists)
         {
             client.Indices.CreateAsync(indexName).Wait();

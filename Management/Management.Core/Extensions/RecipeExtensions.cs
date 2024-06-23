@@ -6,12 +6,13 @@ namespace Management.Core.Extensions;
 
 public static class RecipeExtensions
 {
-    public static RecipeDto ToDto(this Recipe recipe, string? imageUrl)
+    public static RecipeDto ToDto(this Recipe recipe, string? imageUrl, string? categoryName, UserDto? user)
     {
         return new RecipeDto
         {
             Id = recipe.Id,
             CategoryId = recipe.CategoryId,
+            CategoryName = categoryName ?? string.Empty,
             CookingMinutes = recipe.CookingMinutes,
             CreatedAt = recipe.CreatedAt,
             Description = recipe.Description,
@@ -25,7 +26,7 @@ public static class RecipeExtensions
             PublishedAt = recipe.PublishedAt,
             Title = recipe.Title,
             UpdatedAt = recipe.UpdatedAt,
-            UserId = recipe.UserId,
+            User = user,
         };
     }
 

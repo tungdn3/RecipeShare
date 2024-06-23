@@ -31,6 +31,13 @@ public class SearchController : ControllerBase
         return pageResult;
     }
 
+    [HttpGet("new", Name = "GetNewRecipes")]
+    public async Task<PageResultDto<SearchResultItemDto>> GetNewRecipes(int pageNumber = 1, int pageSize = 10)
+    {
+        PageResultDto<SearchResultItemDto> pageResult = await _searchService.GetNewRecipes(pageNumber, pageSize);
+        return pageResult;
+    }
+
     [HttpGet("complete", Name = "Complete")]
     public async Task<IActionResult> Complete(string query, int top = 10)
     {
