@@ -91,7 +91,7 @@ services:
       - POSTGRES_PASSWORD=mysecretpassword
 
   management-api:
-    image: tungdn3/recipeshare-management-api:0.0.4
+    image: tungdn3/recipeshare-management-api:0.0.6
     build:
       context: .
       dockerfile: Management/Management.API/Dockerfile
@@ -112,7 +112,7 @@ services:
       
 
   search-api:
-    image: tungdn3/recipeshare-search-api:0.0.4
+    image: tungdn3/recipeshare-search-api:0.0.6
     build:
       context: .
       dockerfile: Search/Search.API/Dockerfile
@@ -122,7 +122,8 @@ services:
     networks:
       - backend
     depends_on:
-      - es01
+      es01:
+        condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_HTTP_PORTS=8080
@@ -205,7 +206,7 @@ services:
 
 
   client-app:
-    image: tungdn3/recipeshare-client-app:0.0.2
+    image: tungdn3/recipeshare-client-app:0.0.9
     build:
       context: ./client-app
       dockerfile: Dockerfile

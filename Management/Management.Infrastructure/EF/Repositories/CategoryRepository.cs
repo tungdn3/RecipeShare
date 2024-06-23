@@ -54,6 +54,11 @@ public class CategoryRepository : ICategoryRepository
         return _dbContext.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
     }
 
+    public Task<List<Category>> GetByIds(IEnumerable<int> ids)
+    {
+        return _dbContext.Categories.AsNoTracking().Where(x => ids.Contains(x.Id)).ToListAsync();
+    }
+
     public Task<Category?> GetByName(string name)
     {
         return _dbContext.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Name == name);

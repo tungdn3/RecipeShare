@@ -47,6 +47,23 @@ internal class UserRepository : IUserRepository
         };
     }
 
+    public async Task<List<UserDto>> GetUsers(IEnumerable<string> userIds)
+    {
+        List<User> entities = await _dbContext.Users.AsNoTracking().Where(x => userIds.Contains(x.Id)).ToListAsync();
+        HashSet<string> entityIds = entities.Select(x => x.Id).ToHashSet();
+        IEnumerable<string> missingIds = userIds.Where(id => !entityIds.Contains(id));
+        IEnumerable<Task<User>> tasks = missingIds.Select(id => GetUserFromAuth0AndSave(id));
+        User[] missingUsers = await Task.WhenAll(tasks);
+        List<UserDto> dtos = entities.Union(missingUsers).Select(user => new UserDto
+        {
+            AvatarUrl = user.Picture,
+            DisplayName = user.DisplayName,
+            Id = user.Id
+        }).ToList();
+
+        return dtos;
+    }
+
     private async Task EnsureUserExist(string userId)
     {
         bool userExist = await _dbContext.Users.AnyAsync(x => x.Id == userId);

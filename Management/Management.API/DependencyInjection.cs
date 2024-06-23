@@ -20,7 +20,6 @@ public static class DependencyInjection
     {
         services.AddValidatorsFromAssemblyContaining<CategoryCreateDtoValidator>();
         services.AddScoped<ICategoryService, CategoryService>();
-        services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRecipeService, RecipeService>();
         services.AddScoped<IImageService, ImageService>();
 

@@ -1,7 +1,12 @@
 <template>
   <div class="recipe-card" @click="goToRecipeDetails">
     <q-card>
-      <q-img :src="props.imageUrl" fit="cover" class="recipe-image" />
+      <q-img
+        :src="props.imageUrl"
+        fit="cover"
+        class="recipe-image"
+        spinner-color="primary"
+      />
 
       <q-card-section class="q-pt-md q-pb-sm text-primary">
         <div class="text-h6 recipe-title">{{ props.title }}</div>
