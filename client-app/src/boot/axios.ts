@@ -14,17 +14,18 @@ declare module '@vue/runtime-core' {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
+const gatewayBaseUrl = process.env.QUASAR_GATEWAY_BASE_URL ?? '';
 const managementApi = axios.create({
-  baseURL: `${process.env.GATEWAY_BASE_URL}/management/`,
+  baseURL: `${gatewayBaseUrl}/management/`,
 });
 const searchApi = axios.create({
-  baseURL: `${process.env.GATEWAY_BASE_URL}/search/`,
+  baseURL: `${gatewayBaseUrl}/search/`,
 });
 const socialApi = axios.create({
-  baseURL: `${process.env.GATEWAY_BASE_URL}/social/`,
+  baseURL: `${gatewayBaseUrl}/social/`,
 });
 const notificationApi = axios.create({
-  baseURL: `${process.env.GATEWAY_BASE_URL}/notification/`,
+  baseURL: `${gatewayBaseUrl}/notification/`,
 });
 
 export default boot(({ app }) => {

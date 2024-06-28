@@ -149,7 +149,7 @@ services:
       - POSTGRES_PASSWORD=mysecretpassword
 
   notification-api:
-    image: tungdn3/recipeshare-notification-api:1.0.1
+    image: tungdn3/recipeshare-notification-api:0.0.1
     build:
       context: .
       dockerfile: Notification/Notification.Api/Dockerfile
@@ -206,10 +206,12 @@ services:
 
 
   client-app:
-    image: tungdn3/recipeshare-client-app:0.0.9
+    image: tungdn3/recipeshare-client-app:0.0.10
     build:
       context: ./client-app
       dockerfile: Dockerfile
+      args:
+        - QUASAR_GATEWAY_BASE_URL=http://localhost:7000
     container_name: client-app-dev
     ports:
       - 9000:80

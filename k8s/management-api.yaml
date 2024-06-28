@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: management-api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: management-api #pods having this label
+  template:
+    metadata:
+      labels:
+        component: management-api
+    spec:
+      containers:
+        - name: management-api
+          image: tungdn3/recipeshare-management-api:0.0.6
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "10m"
+            limits:
+              memory: "256Mi"
+              cpu: "100m"
+          env:
+            - name: ConnectionStrings__ManagementDbContextPostgres
+              value: "Server=management-db-cluster-ip-service;Port=5432;Database=management;User Id=postgres;Password=mysecretpassword;"
+            - name: ConnectionStrings__DbContextPostgres
+              value: host=management-db-cluster-ip-service;Port=5432;Database=management;User Id=postgres;Password=mysecretpassword
+            - name: ConnectionStrings__AzureServiceBus
+              value: Endpoint=sb://sbns-recipe-share.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=nspiX1EiSMlGkGZGYk+1lUNSMizPfw+0o+ASbJIMRRc=
+            - name: AzureStorage__ConnectionString
+              value: DefaultEndpointsProtocol=https;AccountName=recipeshare;AccountKey=4ZqVH7npQIQlEJ/OmJ3Phdeikp28ekVx3AfMbEAwrrBp/9119BtpH0QVKwAfqIWAwknfRrfAE92R+AStBWpYAA==;EndpointSuffix=core.windows.net
+      
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: management-api-load-balancer
+# spec:
+#   ports:
+#   - port: 80
+#     targetPort: 8080
+#   selector:
+#     component: management-api
+#   type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: management-api-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: management-api
+  ports:
+    - port: 8080
+      targetPort: 8080

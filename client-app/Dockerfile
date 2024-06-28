@@ -1,4 +1,6 @@
 FROM node:latest AS build-stage
+ARG QUASAR_GATEWAY_BASE_URL="http://localhost:7000"
+ENV QUASAR_GATEWAY_BASE_URL=$QUASAR_GATEWAY_BASE_URL
 WORKDIR /app
 COPY package*.json ./
 RUN npm install

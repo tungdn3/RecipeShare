@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-app-deployment
+spec:
+  selector:
+    matchLabels:
+      component: client-app #pods having this label
+  template:
+    metadata:
+      labels:
+        component: client-app
+    spec:
+      containers:
+        - name: client-app
+          image: tungdn3/recipeshare-client-app:0.0.10
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "10m"
+            limits:
+              memory: "256Mi"
+              cpu: "100m"
+          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-app-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: client-app
+  ports:
+    - port: 80
+      targetPort: 80
