@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: notification-api # match pods having this label
+  template:
+    metadata:
+      labels:
+        component: notification-api
+    spec:
+      containers:
+        - name: notification-api
+          image: tungdn3/recipeshare-notification-api:0.0.1
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "10m"
+            limits:
+              memory: "256Mi"
+              cpu: "100m"
+          env:
+            - name: ConnectionStrings__DbContextPostgres
+              value: host=notification-db-cluster-ip-service;Port=5432;Database=notification;User Id=postgres;Password=mysecretpassword
+            - name: ConnectionStrings__AzureServiceBus
+              value: Endpoint=sb://sbns-recipe-share.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=nspiX1EiSMlGkGZGYk+1lUNSMizPfw+0o+ASbJIMRRc=
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-api-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: notification-api
+  ports:
+    - port: 8080
+      targetPort: 8080

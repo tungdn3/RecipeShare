@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: notification-db
+  template:
+    metadata:
+      labels:
+        component: notification-db
+    spec:
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: notification-db-persistent-volume-claim
+      containers:
+        - name: notification-db
+          image: postgres:16.3
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+              subPath: notification
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "10m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          env:
+            - name: POSTGRES_PASSWORD
+              value: mysecretpassword
+            - name: POSTGRES_DB
+              value: notification
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: notification-db-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-db-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: notification-db
+  ports:
+    - port: 5432
+      targetPort: 5432

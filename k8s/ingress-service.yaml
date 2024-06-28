@@ -19,6 +19,15 @@ spec:
             name: management-api-cluster-ip-service
             port: 
               number: 8080
+      
+      - pathType: Prefix
+        path: "/notification"
+        backend:
+          service:
+            name: notification-api-cluster-ip-service
+            port: 
+              number: 8080
+
       - pathType: Prefix
         path: "/"
         backend:
