@@ -26,11 +26,20 @@ spec:
               cpu: "100m"
           env:
             - name: ConnectionStrings__DbContextPostgres
-              value: host=management-db-cluster-ip-service;Port=5432;Database=management;User Id=postgres;Password=mysecretpassword
+              valueFrom:
+                secretKeyRef:
+                  name: management-secret
+                  key: db-connection-string
             - name: ConnectionStrings__AzureServiceBus
-              value: Endpoint=sb://sbns-recipe-share.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=nspiX1EiSMlGkGZGYk+1lUNSMizPfw+0o+ASbJIMRRc=
+              valueFrom:
+                secretKeyRef:
+                  name: management-secret
+                  key: asb-connection-string
             - name: AzureStorage__ConnectionString
-              value: DefaultEndpointsProtocol=https;AccountName=recipeshare;AccountKey=4ZqVH7npQIQlEJ/OmJ3Phdeikp28ekVx3AfMbEAwrrBp/9119BtpH0QVKwAfqIWAwknfRrfAE92R+AStBWpYAA==;EndpointSuffix=core.windows.net
+              valueFrom:
+                secretKeyRef:
+                  name: management-secret
+                  key: storage-connection-string
       
 # ---
 # apiVersion: v1

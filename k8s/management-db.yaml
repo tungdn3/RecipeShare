@@ -34,7 +34,10 @@ spec:
               cpu: "200m"
           env:
             - name: POSTGRES_PASSWORD
-              value: mysecretpassword
+              valueFrom:
+                secretKeyRef:
+                  name: management-secret
+                  key: db-password
             - name: POSTGRES_DB
               value: management
 

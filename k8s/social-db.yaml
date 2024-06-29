@@ -1,51 +1,51 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: notification-db-deployment
+  name: social-db-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: notification-db
+      component: social-db
   template:
     metadata:
       labels:
-        component: notification-db
+        component: social-db
     spec:
       volumes:
         - name: db-storage
           persistentVolumeClaim:
-            claimName: notification-db-persistent-volume-claim
+            claimName: social-db-persistent-volume-claim
       containers:
-        - name: notification-db
+        - name: social-db
           image: postgres:16.3
           ports:
             - containerPort: 5432
           volumeMounts:
             - name: db-storage
               mountPath: /var/lib/postgresql/data
-              subPath: notification
+              subPath: social
           resources:
             requests:
               memory: "128Mi"
               cpu: "10m"
             limits:
               memory: "256Mi"
-              cpu: "200m"
+              cpu: "100m"
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: notification-secret
+                  name: social-secret
                   key: db-password
             - name: POSTGRES_DB
-              value: notification
+              value: social
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: notification-db-persistent-volume-claim
+  name: social-db-persistent-volume-claim
 spec:
   accessModes:
     - ReadWriteOnce
@@ -57,11 +57,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: notification-db-cluster-ip-service
+  name: social-db-cluster-ip-service
 spec:
   type: ClusterIP
   selector:
-    component: notification-db
+    component: social-db
   ports:
     - port: 5432
       targetPort: 5432

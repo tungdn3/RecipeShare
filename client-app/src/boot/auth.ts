@@ -6,11 +6,11 @@ import { boot } from 'quasar/wrappers';
 export default boot(({ app }) => {
   app.use(
     createAuth0({
-      domain: 'tungdev.au.auth0.com',
-      clientId: '4I0IrD6iHzSWdQF0QUb6SMIYdlxDTb3f',
+      domain: process.env.QUASAR_AUTH0_DOMAIN || '',
+      clientId: process.env.QUASAR_AUTH0_CLIENT_ID || '',
       authorizationParams: {
         redirect_uri: window.location.origin,
-        audience: 'https://dev-recipe-share.com',
+        audience: process.env.QUASAR_AUTH0_AUDIENCE || '',
       },
     })
   );

@@ -26,9 +26,15 @@ spec:
               cpu: "100m"
           env:
             - name: ConnectionStrings__DbContextPostgres
-              value: host=notification-db-cluster-ip-service;Port=5432;Database=notification;User Id=postgres;Password=mysecretpassword
+              valueFrom:
+                secretKeyRef:
+                  name: notification-secret
+                  key: db-connection-string
             - name: ConnectionStrings__AzureServiceBus
-              value: Endpoint=sb://sbns-recipe-share.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=nspiX1EiSMlGkGZGYk+1lUNSMizPfw+0o+ASbJIMRRc=
+              valueFrom:
+                secretKeyRef:
+                  name: notification-secret
+                  key: asb-connection-string
 
 ---
 apiVersion: v1
