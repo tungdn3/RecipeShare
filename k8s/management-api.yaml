@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: management-api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: management-api #pods having this label
+  template:
+    metadata:
+      labels:
+        component: management-api
+    spec:
+      containers:
+        - name: management-api
+          image: tungdn3/recipeshare-management-api:0.0.6
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "10m"
+            limits:
+              memory: "256Mi"
+              cpu: "100m"
+          env:
+            - name: ConnectionStrings__DbContextPostgres
+              valueFrom:
+                secretKeyRef:
+                  name: management-secret
+                  key: db-connection-string
+            - name: ConnectionStrings__AzureServiceBus
+              valueFrom:
+                secretKeyRef:
+                  name: management-secret
+                  key: asb-connection-string
+            - name: AzureStorage__ConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: management-secret
+                  key: storage-connection-string
+      
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: management-api-load-balancer
+# spec:
+#   ports:
+#   - port: 80
+#     targetPort: 8080
+#   selector:
+#     component: management-api
+#   type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: management-api-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: management-api
+  ports:
+    - port: 8080
+      targetPort: 8080

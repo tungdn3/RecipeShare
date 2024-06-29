@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: search-db
+  template:
+    metadata:
+      labels:
+        component: search-db
+    spec:
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: elk-azurefile
+      containers:
+        - name: search-db
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
+          ports:
+            - containerPort: 9200
+          volumeMounts:
+            - name: db-storage
+              mountPath: /usr/share/elasticsearch/data
+              subPath: search
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "100m"
+            limits:
+              memory: "1Gi"
+              cpu: "300m"
+          env:
+            - name: node.name
+              value: es01
+            - name: cluster.name
+              value: es-recipe-share-cluster
+            - name: discovery.type
+              value: single-node
+            - name: ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: search-secret
+                  key: es-password
+            - name: bootstrap.memory_lock
+              value: "true"
+            - name: xpack.security.enabled
+              value: "true"
+            - name: xpack.security.http.ssl.enabled
+              value: "false"
+            - name: xpack.security.transport.ssl.enabled
+              value: "false"
+            - name: xpack.license.self_generated.type
+              value: basic
+
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: elk-azurefile-sc
+provisioner: kubernetes.io/azure-file
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=1000
+  - gid=1000
+  - mfsymlinks
+  - nobrl
+parameters:
+  skuName: Standard_LRS
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elk-azurefile
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: elk-azurefile-sc
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: search-db-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: search-db
+  ports:
+    - port: 9200
+      targetPort: 9200

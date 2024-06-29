@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: management-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: management-db
+  template:
+    metadata:
+      labels:
+        component: management-db
+    spec:
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: management-db-persistent-volume-claim
+      containers:
+        - name: management-db
+          image: postgres:16.3
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+              subPath: management # seems redundant
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "10m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: management-secret
+                  key: db-password
+            - name: POSTGRES_DB
+              value: management
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: management-db-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: management-db-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: management-db
+  ports:
+    - port: 5432
+      targetPort: 5432

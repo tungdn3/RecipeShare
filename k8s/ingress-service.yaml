@@ -1,0 +1,57 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    # kubernetes.io/ingress.class: nginx
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.azure.com/tls-cert-keyvault-uri: https://kvrecipeshare.vault.azure.net/certificates/recipeshareselfsigncert
+spec:
+  ingressClassName: webapprouting.kubernetes.azure.com
+  rules:
+  - host: recipeshare.website
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/management"
+        backend:
+          service:
+            name: gateway-cluster-ip-service
+            port: 
+              number: 8080
+      
+      - pathType: Prefix
+        path: "/search"
+        backend:
+          service:
+            name: gateway-cluster-ip-service
+            port: 
+              number: 8080
+
+      - pathType: Prefix
+        path: "/social"
+        backend:
+          service:
+            name: gateway-cluster-ip-service
+            port: 
+              number: 8080
+
+      - pathType: Prefix
+        path: "/notification"
+        backend:
+          service:
+            name: gateway-cluster-ip-service
+            port: 
+              number: 8080
+
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: client-app-cluster-ip-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - recipeshare.website
+    secretName: keyvault-ingress-service

@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: social-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: social-db
+  template:
+    metadata:
+      labels:
+        component: social-db
+    spec:
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: social-db-persistent-volume-claim
+      containers:
+        - name: social-db
+          image: postgres:16.3
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+              subPath: social
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "10m"
+            limits:
+              memory: "256Mi"
+              cpu: "100m"
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: social-secret
+                  key: db-password
+            - name: POSTGRES_DB
+              value: social
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: social-db-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: social-db-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: social-db
+  ports:
+    - port: 5432
+      targetPort: 5432
