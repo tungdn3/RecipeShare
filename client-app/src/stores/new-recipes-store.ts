@@ -29,7 +29,6 @@ export const useNewRecipesStore = defineStore('new-recipes', () => {
     }
   }
 
-  getNewRecipes();
   return {
     recipes,
     recipePageResult,

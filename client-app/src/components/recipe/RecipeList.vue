@@ -18,7 +18,7 @@
         />
       </div>
     </div>
-    <div v-if="isLoading">
+    <div v-if="isLoading" class="q-mt-lg">
       <q-spinner color="primary" size="3em" />
     </div>
   </div>
@@ -28,6 +28,7 @@
 import { useNewRecipesStore } from 'src/stores/new-recipes-store';
 import { storeToRefs } from 'pinia';
 import RecipeCard from 'src/components/recipe/RecipeCard.vue';
+import { onMounted } from 'vue';
 
 defineOptions({
   name: 'RecipeList',
@@ -35,4 +36,9 @@ defineOptions({
 
 const newRecipesStore = useNewRecipesStore();
 const { recipes, isLoading } = storeToRefs(newRecipesStore);
+
+onMounted(() => {
+  newRecipesStore.getNewRecipes();
+});
+console.log('--------> new recipes', recipes.value);
 </script>
