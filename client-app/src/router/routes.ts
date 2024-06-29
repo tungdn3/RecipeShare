@@ -8,10 +8,13 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     beforeEnter: authGuard,
     children: [
-      { path: 'add', component: () => import('pages/recipe/RecipeAdd.vue') },
+      {
+        path: 'add',
+        component: () => import('pages/recipe/RecipeAddPage.vue'),
+      },
       {
         path: ':id/edit',
-        component: () => import('pages/recipe/RecipeEdit.vue'),
+        component: () => import('pages/recipe/RecipeEditPage.vue'),
       },
       {
         path: ':id',
