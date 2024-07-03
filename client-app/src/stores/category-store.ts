@@ -2,8 +2,10 @@ import { defineStore } from 'pinia';
 import Category from 'src/interfaces/Category';
 import { useAuth0 } from '@auth0/auth0-vue';
 import { managementApi } from 'src/boot/axios';
+import { useQuasar } from 'quasar';
 
 export const useCategoryStore = () => {
+  const $q = useQuasar();
   const categoryStore = defineStore('category', {
     state: () => {
       return {
@@ -26,6 +28,20 @@ export const useCategoryStore = () => {
           this.categories = response.data;
           return this.categories;
         } catch (e) {
+          $q.notify({
+            message: 'Failed to get category list. Please try again later.',
+            color: 'negative',
+            actions: [
+              {
+                icon: 'close',
+                color: 'white',
+                round: true,
+                handler: () => {
+                  /* ... */
+                },
+              },
+            ],
+          });
           return [];
         } finally {
           this.isLoading = false;

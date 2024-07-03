@@ -47,16 +47,6 @@ app.Run();
 static void EnsureElasticSearchIndexCreated(WebApplication app)
 {
     using var scope = app.Services.CreateScope();
-    try
-    {
-        ElasticsearchClient client = scope.ServiceProvider.GetRequiredService<ElasticsearchClient>();
-        ElasticSearchInitializer.EnsureIndexCreated(client, SearchConstants.ElasticSearch.IndexName);
-    }
-    catch (Exception ex)
-    {
-        var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-        var elsHost = configuration["ElasticSearch:Host"];
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, $"An error occurred creating ElasticSearch index. Host={elsHost}");
-    }
+    ElasticsearchClient client = scope.ServiceProvider.GetRequiredService<ElasticsearchClient>();
+    ElasticSearchInitializer.EnsureIndexCreated(client, SearchConstants.ElasticSearch.IndexName);
 }

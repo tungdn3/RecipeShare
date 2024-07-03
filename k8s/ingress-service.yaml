@@ -2,10 +2,10 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-service
-  annotations:
+  # annotations:
     # kubernetes.io/ingress.class: nginx
     # nginx.ingress.kubernetes.io/rewrite-target: /
-    kubernetes.azure.com/tls-cert-keyvault-uri: https://kvrecipeshare.vault.azure.net/certificates/recipeshareselfsigncert
+    # kubernetes.azure.com/tls-cert-keyvault-uri: https://kvrecipeshare.vault.azure.net/certificates/recipeshareselfsigncert
 spec:
   ingressClassName: webapprouting.kubernetes.azure.com
   rules:
@@ -54,4 +54,5 @@ spec:
   tls:
   - hosts:
     - recipeshare.website
-    secretName: keyvault-ingress-service
+    # secretName: keyvault-ingress-service
+    secretName: ingress-zerossl-cert
