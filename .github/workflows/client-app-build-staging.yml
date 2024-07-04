@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Management - Build and push the latest build to staging
+name: Client App - Build and push the latest build to staging
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the main branch
@@ -8,7 +8,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'RecipeShare/Management'
+      - 'RecipeShare/client-app'
   
   workflow_dispatch:
 
@@ -41,50 +41,16 @@ jobs:
         uses: docker/build-push-action@v6.3.0
         with:
           # Build's context is the set of files located in the specified PATH or URL
-          context: .
+          context: ./client-app
           # Path to the Dockerfile
-          file: Management/Management.API/Dockerfile
+          file: Dockerfile
           # Push is a shorthand for --output=type=registry
           push: true
+          # List of build-time variables
+          build-args: |
+            QUASAR_GATEWAY_BASE_URL=https://recipeshare.website
+            QUASAR_AUTH0_DOMAIN=tungdev.au.auth0.com
+            QUASAR_AUTH0_CLIENT_ID=4I0IrD6iHzSWdQF0QUb6SMIYdlxDTb3f
+            QUASAR_AUTH0_AUDIENCE=https://dev-recipe-share.com
           # List of tags
-          tags: ${{secrets.DOCKERHUB_USERNAME}}/recipeshare-management-api:latest
-
-  # deploy:
-  #   runs-on: ubuntu-20.04
-  #   needs: build_push_image # Will wait for the execution of the previous job
-  #   permissions:
-  #     id-token: write # This is required for requesting the JWT
-  #     contents: read # This is required for actions/checkout
-
-  #   steps:
-  #     - uses: actions/checkout@v2
-      
-  #     - name: Install Helm
-  #       uses: Azure/setup-helm@v1
-  #       with:
-  #         version: v3.3.1
-
-  #     - name: Sign in to Azure with OIDC
-  #       uses: azure/login@v2
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
-  #         # client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         # tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         # subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-  #     - name: Azure Kubernetes set context
-  #       uses: Azure/aks-set-context@v3
-  #       with:
-  #         resource-group: ${{ secrets.RESOURCE_GROUP }}
-  #         cluster-name: ${{ secrets.CLUSTER_NAME }}
-      
-  #     - name: Run Helm Deploy
-  #       run: |
-  #         helm upgrade \
-  #           --install \
-  #           --create-namespace \
-  #           --atomic \
-  #           --wait \
-  #           --namespace staging \
-  #           recipe-share \
-  #           ./k8s/recipe-share
+          tags: ${{secrets.DOCKERHUB_USERNAME}}/recipeshare-client-app:latest
