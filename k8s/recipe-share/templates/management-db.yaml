@@ -47,6 +47,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: management-db-persistent-volume-claim
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -59,6 +60,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: management-db-cluster-ip-service
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   type: ClusterIP
   selector:

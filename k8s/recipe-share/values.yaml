@@ -1,2 +1,14 @@
-image:
+managementImage:
+  tag: latest
+
+searchImage:
+  tag: latest
+
+socialImage:
+  tag: latest
+
+notificationImage:
+  tag: latest
+
+clientAppImage:
   tag: latest

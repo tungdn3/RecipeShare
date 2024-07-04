@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: notification-db-deployment
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   replicas: 1
   selector:
@@ -46,6 +47,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: notification-db-persistent-volume-claim
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -58,6 +60,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: notification-db-cluster-ip-service
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   type: ClusterIP
   selector:

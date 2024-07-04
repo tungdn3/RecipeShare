@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: management-api
-          image: tungdn3/recipeshare-management-api:{{ default "latest" .Values.image.tag }}
+          image: tungdn3/recipeshare-management-api:{{ default "latest" .Values.managementImage.tag }}
           ports:
             - containerPort: 8080
               name: http

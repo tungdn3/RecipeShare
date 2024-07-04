@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: social-api-deployment
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   replicas: 1
   selector:
@@ -14,7 +15,7 @@ spec:
     spec:
       containers:
         - name: social-api
-          image: tungdn3/recipeshare-social-api:0.0.1
+          image: tungdn3/recipeshare-social-api:{{ default "latest" .Values.socialImage.tag }}
           ports:
             - containerPort: 8080
           resources:
@@ -56,6 +57,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: social-api-cluster-ip-service
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   type: ClusterIP
   selector:
