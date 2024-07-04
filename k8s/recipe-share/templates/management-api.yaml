@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: management-api-deployment
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   replicas: 1
   selector:
@@ -14,9 +15,10 @@ spec:
     spec:
       containers:
         - name: management-api
-          image: tungdn3/recipeshare-management-api:0.0.6
+          image: tungdn3/recipeshare-management-api:{{ default "latest" .Values.managementImage.tag }}
           ports:
             - containerPort: 8080
+              name: http
           resources:
             requests:
               memory: "128Mi"
@@ -59,6 +61,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: management-api-cluster-ip-service
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   type: ClusterIP
   selector:

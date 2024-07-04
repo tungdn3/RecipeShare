@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-service
+  namespace: {{ default "staging" .Release.Namespace }}
   # annotations:
     # kubernetes.io/ingress.class: nginx
     # nginx.ingress.kubernetes.io/rewrite-target: /
@@ -16,7 +17,7 @@ spec:
         path: "/management"
         backend:
           service:
-            name: gateway-cluster-ip-service
+            name: management-api-cluster-ip-service
             port: 
               number: 8080
       
@@ -24,7 +25,7 @@ spec:
         path: "/search"
         backend:
           service:
-            name: gateway-cluster-ip-service
+            name: search-api-cluster-ip-service
             port: 
               number: 8080
 
@@ -32,7 +33,7 @@ spec:
         path: "/social"
         backend:
           service:
-            name: gateway-cluster-ip-service
+            name: social-api-cluster-ip-service
             port: 
               number: 8080
 
@@ -40,7 +41,7 @@ spec:
         path: "/notification"
         backend:
           service:
-            name: gateway-cluster-ip-service
+            name: notification-api-cluster-ip-service
             port: 
               number: 8080
 

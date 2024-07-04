@@ -1,67 +1,70 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: management-db-deployment
+  name: social-db-deployment
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: management-db
+      component: social-db
   template:
     metadata:
       labels:
-        component: management-db
+        component: social-db
     spec:
       volumes:
         - name: db-storage
           persistentVolumeClaim:
-            claimName: management-db-persistent-volume-claim
+            claimName: social-db-persistent-volume-claim
       containers:
-        - name: management-db
+        - name: social-db
           image: postgres:16.3
           ports:
             - containerPort: 5432
           volumeMounts:
             - name: db-storage
               mountPath: /var/lib/postgresql/data
-              subPath: management # seems redundant
+              subPath: social
           resources:
             requests:
               memory: "128Mi"
               cpu: "10m"
             limits:
               memory: "256Mi"
-              cpu: "200m"
+              cpu: "100m"
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: management-secret
+                  name: social-secret
                   key: db-password
             - name: POSTGRES_DB
-              value: management
+              value: social
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: management-db-persistent-volume-claim
+  name: social-db-persistent-volume-claim
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 500Mi
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: management-db-cluster-ip-service
+  name: social-db-cluster-ip-service
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   type: ClusterIP
   selector:
-    component: management-db
+    component: social-db
   ports:
     - port: 5432
       targetPort: 5432

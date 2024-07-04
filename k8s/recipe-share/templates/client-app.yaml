@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client-app-deployment
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -13,7 +14,7 @@ spec:
     spec:
       containers:
         - name: client-app
-          image: tungdn3/recipeshare-client-app:0.0.11
+          image: tungdn3/recipeshare-client-app:{{ default "latest" .Values.clientAppImage.tag }}
           ports:
             - containerPort: 80
           resources:
