@@ -38,17 +38,6 @@ builder.Services
         };
     });
 
-//builder.Services
-//  .AddAuthorization(options =>
-//  {
-//      options.AddPolicy(
-//        "read:messages",
-//        policy => policy.Requirements.Add(
-//          new HasScopeRequirement("read:messages", "https://dev-recipe-share.com")
-//        )
-//      );
-//  });
-
 builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 builder.Services.AddHttpContextAccessor();
 
