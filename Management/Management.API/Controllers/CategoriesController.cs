@@ -40,7 +40,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPut("{id}", Name = "UpdateCategory")]
-    public async Task<IActionResult> Update(int id, UpdateCategory.UpdateCategoryRequest request)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateCategory.UpdateCategoryRequest request)
     {
         request.Id = id;
         await _mediator.Send(request);
