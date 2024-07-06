@@ -60,7 +60,7 @@ spec:
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: elk-azurefile-sc
+  name: elk-azurefile-sc-{{ default "staging" .Release.Namespace }}
   namespace: {{ default "staging" .Release.Namespace }}
 provisioner: kubernetes.io/azure-file
 reclaimPolicy: Retain
@@ -84,7 +84,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: elk-azurefile-sc
+  storageClassName: elk-azurefile-sc-{{ default "staging" .Release.Namespace }}
   resources:
     requests:
       storage: 1Gi

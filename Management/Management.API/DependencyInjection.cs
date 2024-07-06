@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Management.Core.Interfaces;
+using Management.Core.MediatorPipelines;
+using Management.Core.Queries;
 using Management.Core.Services;
 using Management.Core.Validators;
 using Management.Infrastructure;
@@ -20,7 +22,6 @@ public static class DependencyInjection
     {
         services.AddValidatorsFromAssemblyContaining<CategoryCreateDtoValidator>();
         services.AddScoped<ICategoryService, CategoryService>();
-        services.AddScoped<IRecipeService, RecipeService>();
         services.AddScoped<IImageService, ImageService>();
 
         services.AddMassTransit(x =>
@@ -51,6 +52,12 @@ public static class DependencyInjection
                     x.SetEntityName("recipe-deleted");
                 });
             });
+        });
+
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(typeof(GetRecipesByCurrentUser).Assembly);
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
 
         return services;
