@@ -8,7 +8,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'RecipeShare/Management'
+      - 'RecipeShare/Management/**'
   
   workflow_dispatch:
 
