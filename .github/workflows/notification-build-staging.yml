@@ -8,7 +8,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'RecipeShare/Notification'
+      - 'RecipeShare/Notification/**'
   
   workflow_dispatch:
 
