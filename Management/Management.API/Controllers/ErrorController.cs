@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using Management.API.Models;
+﻿using Management.API.Models;
 using Management.Core.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -66,6 +65,7 @@ public class ErrorController : Controller
                 : "An error happened while processing the request.",
             InnerError = innerError,
         };
+
         return StatusCode((int)HttpStatusCode.InternalServerError, unknownError);
     }
 }

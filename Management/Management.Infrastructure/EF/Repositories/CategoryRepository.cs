@@ -1,5 +1,4 @@
-﻿using Management.Core.Dtos;
-using Management.Core.Entities;
+﻿using Management.Core.Entities;
 using Management.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,20 +15,14 @@ public class CategoryRepository : ICategoryRepository
 
     public Task<bool> CheckCategoryHavingRecipes(int id)
     {
-        throw new NotImplementedException();
+        return _dbContext.Recipes.AnyAsync(x => x.CategoryId == id);
     }
 
-    public async Task<int> Create(CategoryCreateDto dto)
+    public async Task<int> Create(Category model)
     {
-        var category = new Category
-        {
-            Name = dto.Name,
-            IsDeleted = false,
-        };
-
-        _dbContext.Categories.Add(category);
+        _dbContext.Categories.Add(model);
         await _dbContext.SaveChangesAsync();
-        return category.Id;
+        return model.Id;
     }
 
     public Task<bool> Exists(int id)
@@ -43,7 +36,7 @@ public class CategoryRepository : ICategoryRepository
 
         if (!string.IsNullOrEmpty(name))
         {
-            query = query.Where(x => x.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+            query = query.Where(x => x.Name.ToUpper().Contains(name.ToUpper()));
         }
 
         return await query.ToArrayAsync();
@@ -61,11 +54,12 @@ public class CategoryRepository : ICategoryRepository
 
     public Task<Category?> GetByName(string name)
     {
-        return _dbContext.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Name == name);
+        return _dbContext.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Name.ToUpper() == name.ToUpper());
     }
 
     public Task Update(Category model)
     {
-        throw new NotImplementedException();
+        _dbContext.Categories.Update(model);
+        return _dbContext.SaveChangesAsync();
     }
 }
