@@ -1,9 +1,8 @@
 ﻿using FluentValidation;
+using Management.Core.Commands;
 using Management.Core.Interfaces;
 using Management.Core.MediatorPipelines;
 using Management.Core.Queries;
-using Management.Core.Services;
-using Management.Core.Validators;
 using Management.Infrastructure;
 using Management.Infrastructure.EF;
 using Management.Infrastructure.EF.Repositories;
@@ -20,9 +19,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddCore(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddValidatorsFromAssemblyContaining<CategoryCreateDtoValidator>();
-        services.AddScoped<ICategoryService, CategoryService>();
-        services.AddScoped<IImageService, ImageService>();
+        services.AddValidatorsFromAssemblyContaining<CreateCategory.Validator>();
 
         services.AddMassTransit(x =>
         {

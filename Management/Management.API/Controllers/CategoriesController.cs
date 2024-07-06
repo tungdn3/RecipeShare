@@ -1,7 +1,9 @@
 ﻿// Ignore Spelling: API
 
+using Management.Core.CategoryUseCases.Queries;
+using Management.Core.Commands;
 using Management.Core.Dtos;
-using Management.Core.Services;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,40 +14,47 @@ namespace Management.API.Controllers;
 [Route("management/[controller]")]
 public class CategoriesController : ControllerBase
 {
-    private readonly ILogger<CategoriesController> _logger;
-    private readonly ICategoryService _categoryService;
+    private readonly IMediator _mediator;
 
-    public CategoriesController(ILogger<CategoriesController> logger, ICategoryService categoryService)
+    public CategoriesController(IMediator mediator)
     {
-        _logger = logger;
-        _categoryService = categoryService;
+        _mediator = mediator;
     }
 
     [HttpGet(Name = "GetCategories")]
     public async Task<IEnumerable<CategoryDto>> Get(string? name = null)
     {
-        IEnumerable<CategoryDto> categories = await _categoryService.Get(name);
+        List<CategoryDto> categories = await _mediator.Send(new GetCategories.GetCategoriesRequest
+        {
+            Name = name,
+        });
+
         return categories;
     }
 
     [HttpPost(Name = "CreateCategory")]
-    public async Task<int> Create([FromBody]CategoryCreateDto dto)
+    public async Task<int> Create([FromBody] CreateCategory.CreateCategoryRequest request)
     {
-        int id = await _categoryService.Create(dto);
+        int id = await _mediator.Send(request);
         return id;
     }
 
     [HttpPut("{id}", Name = "UpdateCategory")]
-    public async Task<IActionResult> Update(int id, CategoryUpdateDto dto)
+    public async Task<IActionResult> Update(int id, UpdateCategory.UpdateCategoryRequest request)
     {
-        await _categoryService.Update(id, dto);
+        request.Id = id;
+        await _mediator.Send(request);
         return NoContent();
     }
 
     [HttpDelete("{id}", Name = "DeleteCategory")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _categoryService.Delete(id);
+        await _mediator.Send(new DeleteCategory.DeleteCategoryRequest
+        {
+            Id = id,
+        });
+
         return NoContent();
     }
 }

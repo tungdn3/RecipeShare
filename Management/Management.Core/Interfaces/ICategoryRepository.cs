@@ -13,7 +13,7 @@ public interface ICategoryRepository
 
     Task<Category[]> Get(string? name = null);
 
-    Task<int> Create(CategoryCreateDto dto);
+    Task<int> Create(Category model);
     
     Task Update(Category model);
     
