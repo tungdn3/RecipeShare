@@ -43,8 +43,8 @@ internal class TokenHandler : DelegatingHandler
     {
         var payload = new
         {
-            client_id = "xhG3qBbR9Ht3LHnQyG4V3yE4TAKZF9SX",
-            client_secret = "fWB2TFOXNL6slW0Dx-Aedn4jFliMPNvL0pnlH2-a4Rn10cbTnSFdmhnfelcHut3f",
+            client_id = _options.ClientId,
+            client_secret = _options.ClientSecret,
             audience = $"{_options.BaseUrl}/api/v2/",
             grant_type = "client_credentials"
         };

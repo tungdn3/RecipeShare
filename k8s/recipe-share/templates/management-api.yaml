@@ -42,6 +42,11 @@ spec:
                 secretKeyRef:
                   name: management-secret
                   key: storage-connection-string
+            - name: Auth0__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: management-secret
+                  key: auth0-client-secret
       
 # ---
 # apiVersion: v1
