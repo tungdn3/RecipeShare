@@ -79,6 +79,12 @@
               label="Ingredient"
               class="col q-pr-sm q-py-md"
               placeholder="e.g. 1 carrot"
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  ingredients.some((x) => x) ||
+                  'Required',
+              ]"
             />
             <div class="q-pr-sm q-py-md">
               <q-btn
@@ -214,7 +220,6 @@ async function save() {
   if (!recipeForm.value) {
     return;
   }
-
   const isValid = await recipeForm.value.validate();
   if (!isValid) {
     Notify.create({
@@ -223,7 +228,6 @@ async function save() {
     });
     throw new Error('The recipe form value is invalid.');
   }
-
   if (!photoUploader.value) {
     Notify.create({
       message: 'Something went wrong. Please try again later.',
@@ -258,6 +262,10 @@ async function save() {
     }
   } finally {
     isSaving.value = false;
+    Notify.create({
+      message: 'Something went wrong. Please try again later.',
+      color: 'negative',
+    });
   }
 }
 
