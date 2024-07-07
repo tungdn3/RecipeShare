@@ -102,16 +102,9 @@
       <div>
         <div class="text-h5">Instructions</div>
         <div class="q-pa-sm">
-          <div class="row">
-            <q-input
-              outlined
-              type="textarea"
+          <div class="row q-pr-sm">
+            <InstructionEditor
               v-model="instructions"
-              :rules="[
-                (val) => val.length > 0 || 'Required',
-                (val) => val.length <= 2000 || 'Max length 2000',
-              ]"
-              label="Instruction"
               class="col-12 q-pr-sm q-py-md"
             />
           </div>
@@ -180,6 +173,8 @@ import { useCategoryStore } from 'src/stores/category-store';
 import { useMyRecipesStore } from 'src/stores/my-recipes-store';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import InstructionEditor from 'src/components/recipe/InstructionEditor.vue';
+import sanitizeHtml from 'sanitize-html';
 
 defineOptions({
   name: 'RecipeAddPage',
@@ -245,7 +240,7 @@ async function save() {
       cookingMinutes: cookingMinutes.value,
       description: description.value,
       ingredients: ingredients.value.filter((x) => x),
-      instructions: instructions.value,
+      instructions: sanitizeHtml(instructions.value),
       isPublished: isPublished.value === '1',
       imageFileName:
         imageFileNames && imageFileNames[0] ? imageFileNames[0] : null,

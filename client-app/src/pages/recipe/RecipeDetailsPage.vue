@@ -4,13 +4,26 @@
     <div class="row">
       <div v-if="recipe" class="col-12 col-lg-8 col-md-7 q-pr-sm">
         <div class="row">
-          <q-img :src="recipe.imageUrl" fit="cover"></q-img>
+          <q-img
+            v-if="recipe.imageUrl"
+            :src="recipe.imageUrl"
+            alt="User's recipe image"
+            fit="cover"
+            :ratio="4 / 3"
+          ></q-img>
+          <q-img
+            v-else
+            src="../../assets/recipe-image-placeholder.jpg"
+            alt="Default recipe image"
+            fit="cover"
+            :ratio="4 / 3"
+          ></q-img>
         </div>
         <div class="row q-my-sm">
           {{ recipe.description }}
         </div>
         <div class="row q-my-sm">
-          {{ recipe.instructions }}
+          <div class="q-pa-none" v-html="safeInstructions"></div>
         </div>
       </div>
       <div v-else class="col-12 col-lg-8 col-md-7 row justify-center">
@@ -100,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import CommentList from 'src/components/comment/CommentList.vue';
 import CommentForm from 'src/components/comment/CommentForm.vue';
 import { useRoute } from 'vue-router';
@@ -111,6 +124,7 @@ import formatNumber from 'src/utilities/format-number';
 import { socialApi } from 'src/boot/axios';
 import { useAuth0 } from '@auth0/auth0-vue';
 import { ICountItem } from 'src/interfaces/Common';
+import sanitizeHtml from 'sanitize-html';
 
 defineOptions({
   name: 'RecipeDetailsPage',
@@ -127,6 +141,12 @@ const commentCount = ref<number | undefined>(undefined);
 const isCommentSubmitting = ref(false);
 const commentForm = ref<InstanceType<typeof CommentForm> | null>(null);
 const commentList = ref<InstanceType<typeof CommentList> | null>(null);
+const safeInstructions = computed(() => {
+  if (!recipe.value?.instructions) {
+    return '';
+  }
+  return sanitizeHtml(recipe.value.instructions);
+});
 
 onMounted(async () => {
   recipe.value = await recipeStore.getMyRecipeById(id.value);
@@ -183,7 +203,6 @@ async function onUnlike() {
 }
 
 async function submitComment(content: string | undefined) {
-  console.log('---------- submit comment', content);
   if (!content) {
     return;
   }

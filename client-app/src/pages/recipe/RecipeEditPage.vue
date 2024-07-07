@@ -101,16 +101,9 @@
       <div>
         <div class="text-h5">Instructions</div>
         <div class="q-pa-sm">
-          <div class="row">
-            <q-input
-              outlined
-              type="textarea"
+          <div class="row q-pr-sm">
+            <InstructionEditor
               v-model="model.instructions"
-              :rules="[
-                (val) => val.length > 0 || 'Required',
-                (val) => val.length <= 2000 || 'Max length 2000',
-              ]"
-              label="Instruction"
               class="col-12 q-pr-sm q-py-md"
             />
           </div>
@@ -183,6 +176,8 @@ import { useCategoryStore } from 'src/stores/category-store';
 import { useMyRecipesStore } from 'src/stores/my-recipes-store';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import InstructionEditor from 'src/components/recipe/InstructionEditor.vue';
+import sanitizeHtml from 'sanitize-html';
 
 defineOptions({
   name: 'RecipeEditPage',
@@ -223,7 +218,7 @@ onMounted(async () => {
     id: id,
     imageFileName: recipe.imageFileName,
     ingredients: recipe.ingredients,
-    instructions: recipe.instructions,
+    instructions: sanitizeHtml(recipe.instructions),
     isPublished: recipe.isPublished,
     preparationMinutes: recipe.preparationMinutes,
     title: recipe.title,
@@ -284,6 +279,7 @@ async function save() {
     model.value.imageFileName =
       imageFileNames && imageFileNames[0] ? imageFileNames[0] : null;
     model.value.isPublished = isPublished.value === '1';
+    model.value.instructions = sanitizeHtml(model.value.instructions);
 
     await recipeStore.update(id, model.value);
 
