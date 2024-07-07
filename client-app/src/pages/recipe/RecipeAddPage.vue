@@ -95,7 +95,7 @@
               />
             </div>
           </div>
-          <div class="row q-pr-sm q-py-md">
+          <div class="row q-pr-sm q-pb-md">
             <q-btn
               color="positive"
               @click="addIngredient"
@@ -109,10 +109,7 @@
         <div class="text-h5">Instructions</div>
         <div class="q-pa-sm">
           <div class="row q-pr-sm">
-            <InstructionEditor
-              v-model="instructions"
-              class="col-12 q-pr-sm q-py-md"
-            />
+            <InstructionEditor v-model="instructions" class="col-12 q-py-md" />
           </div>
         </div>
       </div>
