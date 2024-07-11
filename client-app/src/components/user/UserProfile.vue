@@ -4,12 +4,6 @@
       <q-btn flat round icon="group_add">
         <q-menu>
           <q-list style="min-width: 100px">
-            <q-item clickable v-close-popup>
-              <q-item-section>Register</q-item-section>
-            </q-item>
-
-            <q-separator />
-
             <q-item clickable v-close-popup @click="login">
               <q-item-section>Log In</q-item-section>
             </q-item>
