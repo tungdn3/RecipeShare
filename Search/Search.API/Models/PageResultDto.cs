@@ -10,7 +10,7 @@ public class PageResultDto<T> where T : class
 
     public long TotalCount { get; set; }
 
-    public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
+    public int TotalPages => PageSize > 0 ? (int)Math.Ceiling(TotalCount / (double)PageSize) : 0;
 
     public bool HasPreviousPage => PageNumber > 0;
 

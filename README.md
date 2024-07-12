@@ -1,6 +1,6 @@
 <!-- PROJECT LOGO -->
 <br />
-<div align="center">
+<div align="center" id="readme-top">
   <a href="https://github.com/tungdn3/RecipeShare">
     <img src="./doc/images/logo.png" alt="Logo" width="64" height="64">
   </a>
@@ -16,21 +16,16 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-![Product Screen Shot](./doc/images/manually-cert.jpg)
+> Notice: This is just a demo of how can we build and deploy the microservices approach. In the reality, the boundary might not be so fine-grained services like this demo.
 
-### Built With
-
-* .Net8
-* Vue
-* Quasar
-* Sqlite
-* Postgres
-* ElasticSearch
-* Azure Service Bus
-* Azure Storage Blob
-* K8s
-* Helm
-* AKS
+- [x] Built on .NET 8.0 LTS and Quasar frameworks
+- [x] Microservices architectural style
+- [x] JWT & Authentication with Auth0
+- [x] Domain Driven Design building blocks
+- [x] CQS with MediatR and Fluent Validations
+- [x] Deploy to AKS with Heml
+- [x] OpenAPI supports
+- [ ] CICD with Github actions
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -93,7 +88,5 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## Contact
 
 Tung Nguyen - tungdn3@gmail.com
-
-Project Link: [https://github.com/tungdn3/RecipeShare](https://github.com/tungdn3/RecipeShare)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
