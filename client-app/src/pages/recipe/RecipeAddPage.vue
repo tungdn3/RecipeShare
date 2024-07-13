@@ -79,6 +79,12 @@
               label="Ingredient"
               class="col q-pr-sm q-py-md"
               placeholder="e.g. 1 carrot"
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  ingredients.some((x) => x) ||
+                  'Required',
+              ]"
             />
             <div class="q-pr-sm q-py-md">
               <q-btn
@@ -89,7 +95,7 @@
               />
             </div>
           </div>
-          <div class="row q-pr-sm q-py-md">
+          <div class="row q-pr-sm q-pb-md">
             <q-btn
               color="positive"
               @click="addIngredient"
@@ -102,18 +108,8 @@
       <div>
         <div class="text-h5">Instructions</div>
         <div class="q-pa-sm">
-          <div class="row">
-            <q-input
-              outlined
-              type="textarea"
-              v-model="instructions"
-              :rules="[
-                (val) => val.length > 0 || 'Required',
-                (val) => val.length <= 2000 || 'Max length 2000',
-              ]"
-              label="Instruction"
-              class="col-12 q-pr-sm q-py-md"
-            />
+          <div class="row q-pr-sm">
+            <InstructionEditor v-model="instructions" class="col-12 q-py-md" />
           </div>
         </div>
       </div>
@@ -180,6 +176,8 @@ import { useCategoryStore } from 'src/stores/category-store';
 import { useMyRecipesStore } from 'src/stores/my-recipes-store';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import InstructionEditor from 'src/components/recipe/InstructionEditor.vue';
+import sanitizeHtml from 'sanitize-html';
 
 defineOptions({
   name: 'RecipeAddPage',
@@ -219,7 +217,6 @@ async function save() {
   if (!recipeForm.value) {
     return;
   }
-
   const isValid = await recipeForm.value.validate();
   if (!isValid) {
     Notify.create({
@@ -228,7 +225,6 @@ async function save() {
     });
     throw new Error('The recipe form value is invalid.');
   }
-
   if (!photoUploader.value) {
     Notify.create({
       message: 'Something went wrong. Please try again later.',
@@ -245,7 +241,7 @@ async function save() {
       cookingMinutes: cookingMinutes.value,
       description: description.value,
       ingredients: ingredients.value.filter((x) => x),
-      instructions: instructions.value,
+      instructions: sanitizeHtml(instructions.value),
       isPublished: isPublished.value === '1',
       imageFileName:
         imageFileNames && imageFileNames[0] ? imageFileNames[0] : null,
@@ -263,6 +259,10 @@ async function save() {
     }
   } finally {
     isSaving.value = false;
+    Notify.create({
+      message: 'Something went wrong. Please try again later.',
+      color: 'negative',
+    });
   }
 }
 
