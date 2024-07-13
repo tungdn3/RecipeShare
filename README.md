@@ -1,22 +1,6 @@
-<!-- PROJECT LOGO -->
-<br />
-<div align="center" id="readme-top">
-  <a href="https://github.com/tungdn3/RecipeShare">
-    <img src="./doc/images/logo.png" alt="Logo" width="64" height="64">
-  </a>
+# Recipe Share
 
-<h3 align="center">Recipe Share</h3>
-
-  <p align="center">
-    RecipeShare is a platform where users can discover, share, and explore recipes from around the world. It allows users to create profiles, share their own recipes, browse recipes by category, search for specific recipes, and interact with other users through comments and ratings.
-    <br />
-</div>
-
-
-<!-- ABOUT THE PROJECT -->
-## About The Project
-
-> Notice: This is just a demo of how can we build and deploy the microservices approach. In the reality, the boundary might not be so fine-grained services like this demo.
+A demo of how I build and deploy the microservices approach. Recipe Share is a platform where users can discover, share, and explore recipes from around the world. It allows users to create profiles, share their own recipes, browse recipes by category, search for specific recipes, and interact with other users through comments and ratings.
 
 - [x] Built on .NET 8.0 LTS and Quasar frameworks
 - [x] Microservices architectural style
@@ -27,6 +11,9 @@
 - [x] OpenAPI supports
 - [ ] CICD with Github actions
 
+### Architecture
+<img src="./doc/images/recipeshare-architecture.jpg" alt="RecipeShare architecture diagram" width="600">
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -34,42 +21,83 @@
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these simple example steps.
+To get a local copy up and running follow these steps.
 
 ### Prerequisites
+* Docker installed
+* Auth0 free account
+* Azure account
+* .Net 8 installed
+* Node 16 or higher
+* Yarn installed
+* Visual Studio
+* Visual Studio Code
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
+### Update configurations
+#### Auth0
+- Create an Auth0 application of type "Single Page Apps"
+  - Allowed Callback URLs
+    - http://localhost:9000
+    - https://localhost:7100/swagger/oauth2-redirect.html
+    - https://localhost:7200/swagger/oauth2-redirect.html
+    - https://localhost:7300/swagger/oauth2-redirect.html
+    - https://localhost:7400/swagger/oauth2-redirect.html
+  - Allowed Web Origins
+    - http://localhost:9000
+    - https://localhost:7100
+    - https://localhost:7200
+    - https://localhost:7300
+    - https://localhost:7400
+  - Allowed Logout URLs
+    - http://localhost:9000
+- Update variables in the `client-app/variables/.env` file
+  - `QUASAR_AUTH0_DOMAIN`
+  - `QUASAR_AUTH0_CLIENT_ID`
+- Create an Auth0 API
+  - Identifier (this value will be used as the ***audience*** parameter on authorization)
+    - recipe-share-api
+    > Audience is the identity of your API application in Auth0. If it is not provided, an opaque access token will be returned instead. It is a token that does not have any payload. You cannot use that token to access your BE API. It will return 401.
+- Create an Auth0 "Machine to Machine" application
+  - Select the Auth0 API above as the API to authorize for invocation
+  - After creating, on the app, navigate to the APIs tab and enable "Authorized" for the **Auth0 Management API**
+    - This is needed because our BE apps will use this M2M credential to get user info from Auth0
+- Update **Auth0** section in the `appsettings.json` files
+  - `Domain`: your Auth0 domain
+  - `Audience`: Identifier of the Auth0 API app above
+  - `ClientId`: Client ID of the Machine to Machine app
+  - `ClientSecret`: Client Secret of the Machine to Machine app
+- Update **Swagger** section in the `appsettings.json` files
+  - `Auth0`
+    - `ClientId`: Client ID of the "Single Page Apps" above
+
+#### Azure Service Bus and Storage Account
+- Create an Service Bus
+  - Update the **ConnectionStrings** section in `appsettings.json` files
+    - `AzureServiceBus`: your Azure Service Bus connection string
+- Create a Storage Account
+  - Update the **AzureStorage** section in `appsettings.json` files
+    - `ConnectionString`: your Storage Account connection string
+
+
+### Run BE services
+1. Start ElasticSearch
   ```sh
-  npm install npm@latest -g
+  cd ./Search/Search.API/docker
+  docker compose up
   ```
+2. In VS, configure the start up projects
+   1. Gateway
+   2. Management.API
+   3. Notification.Api
+   4. Search.API
+   5. Social.API
 
-### Installation
-
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/tungdn3/RecipeShare.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
+### Run FE
+```sh
+cd client-app
+yarn
+yarn quasar dev
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
