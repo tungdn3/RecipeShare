@@ -72,6 +72,7 @@
           icon="favorite_border"
           :label="formatNumber(likeCount)"
           @click="onLike"
+          :loading="liking"
         />
         <q-btn
           v-else
@@ -82,6 +83,7 @@
           icon="favorite"
           :label="formatNumber(likeCount)"
           @click="onUnlike"
+          :loading="liking"
         />
       </div>
     </div>
@@ -141,6 +143,7 @@ const commentCount = ref<number | undefined>(undefined);
 const isCommentSubmitting = ref(false);
 const commentForm = ref<InstanceType<typeof CommentForm> | null>(null);
 const commentList = ref<InstanceType<typeof CommentList> | null>(null);
+const liking = ref<boolean>();
 const safeInstructions = computed(() => {
   if (!recipe.value?.instructions) {
     return '';
@@ -173,32 +176,42 @@ async function getLikeCount() {
 }
 
 async function onLike() {
-  const accessToken = await auth0.getAccessTokenSilently();
-  const response = await socialApi.post<number>(
-    'likes',
-    {
-      recipeId: id.value,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
+  liking.value = true;
+  try {
+    const accessToken = await auth0.getAccessTokenSilently();
+    const response = await socialApi.post<number>(
+      'likes',
+      {
+        recipeId: id.value,
       },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    if (response.status == 200 || response.status == 201) {
+      likeId.value = response.data;
     }
-  );
-  if (response.status == 200 || response.status == 201) {
-    likeId.value = response.data;
+  } finally {
+    liking.value = false;
   }
 }
 
 async function onUnlike() {
-  const accessToken = await auth0.getAccessTokenSilently();
-  const response = await socialApi.delete(`likes/${likeId.value}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  if (response.status == 200 || response.status == 204) {
-    likeId.value = undefined;
+  liking.value = true;
+  try {
+    const accessToken = await auth0.getAccessTokenSilently();
+    const response = await socialApi.delete(`likes/${likeId.value}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (response.status == 200 || response.status == 204) {
+      likeId.value = undefined;
+    }
+  } finally {
+    liking.value = false;
   }
 }
 

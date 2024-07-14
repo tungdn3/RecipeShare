@@ -121,4 +121,17 @@ public class CommentRepository : ICommentRepository
         _context.Comments.Update(comment);
         await _context.SaveChangesAsync();
     }
+
+    public Task<List<CountDto>> CountRecipesComments(List<int> recipeIds)
+    {
+        return _context.Comments
+            .Where(x => recipeIds.Contains(x.RecipeId))
+            .GroupBy(x => x.RecipeId)
+            .Select(x => new CountDto
+            {
+                Id = x.Key,
+                Count = x.Count()
+            })
+            .ToListAsync();
+    }
 }

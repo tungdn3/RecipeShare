@@ -98,6 +98,7 @@ defineOptions({
   name: 'InstructionEditor',
 });
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 function onPaste(evt: any) {
   if (!editorRef.value) return;
   // Let inputs do their thing, so we don't break pasting of links.
@@ -112,6 +113,7 @@ function onPaste(evt: any) {
     text = evt.clipboardData.getData('text/plain');
     editorRef.value.runCmd('insertText', text);
   } else if (
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     (window as any).clipboardData &&
     (window as any).clipboardData.getData
   ) {

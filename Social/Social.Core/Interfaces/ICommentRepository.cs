@@ -12,4 +12,5 @@ public interface ICommentRepository
     Task<PageResultDto<CommentDto>> GetByRecipe(int recipeId, int pageNumber, int pageSize);
     Task Delete(int id);
     Task Save(Comment comment);
+    Task<List<CountDto>> CountRecipesComments(List<int> recipeIds);
 }

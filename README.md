@@ -64,8 +64,10 @@ To get a local copy up and running follow these steps.
       > Audience is the identity of your API application in Auth0. If it is not provided, an opaque access token will be returned instead. It is a token that does not have any payload. You cannot use that token to access your BE API. It will return 401.
 - Create an Auth0 "Machine to Machine" application
   - Select the Auth0 API above as the API to authorize for invocation
-  - After creating, on the app, navigate to the APIs tab and enable "Authorized" for the **Auth0 Management API**
-    - This is needed because our BE apps will use this M2M credential to get user info from Auth0
+  - After creating, on the app
+    - Navigate to the APIs tab and enable "Authorized" for the **Auth0 Management API**
+      - This is needed because our BE apps will use this M2M credential to get user info from Auth0
+    - Click the "chevron down button" to expand the permissions section and select the **read:users**
 - Update **Auth0** section in the `appsettings.json` files
   - `Domain`: your Auth0 domain
   - `Audience`: Identifier of the Auth0 API app above

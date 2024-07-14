@@ -23,14 +23,14 @@ public class CommentService
     public async Task<PageResultDto<CommentDto>> GetByRecipe(int recipeId, int pageNumber, int pageSize)
     {
         PageResultDto<CommentDto> result = await _commentRepository.GetByRecipe(recipeId, pageNumber, pageSize);
-        FillUserInfo(result);
+        await FillUserInfo(result);
         return result;
     }
 
     public async Task<PageResultDto<CommentDto>> GetReplies(int commentId, int pageNumber, int pageSize)
     {
         PageResultDto<CommentDto> result = await _commentRepository.GetReplies(commentId, pageNumber, pageSize);
-        FillUserInfo(result);
+        await FillUserInfo(result);
         return result;
     }
 
@@ -153,5 +153,10 @@ public class CommentService
         comment.Content = request.Content;
         comment.UpdatedAt = DateTime.UtcNow;
         await _commentRepository.Save(comment);
+    }
+
+    public Task<List<CountDto>> CountRecipesComments(List<int> recipeIds)
+    {
+        return _commentRepository.CountRecipesComments(recipeIds);
     }
 }
