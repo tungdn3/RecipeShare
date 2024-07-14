@@ -1,6 +1,8 @@
 # Recipe Share
 
-A demo of how I build and deploy the microservices approach. Recipe Share is a platform where users can discover, share, and explore recipes from around the world. It allows users to create profiles, share their own recipes, browse recipes by category, search for specific recipes, and interact with other users through comments and ratings.
+Recipe Share is a platform where users can discover, share, and explore recipes from around the world. It allows users to create profiles, share their own recipes, browse recipes by category, search for specific recipes, and interact with other users through comments and ratings.
+
+This is a demo of how I build and deploy the microservices approach. 
 
 - [x] Built on .NET 8.0 LTS and Quasar frameworks
 - [x] Microservices architectural style

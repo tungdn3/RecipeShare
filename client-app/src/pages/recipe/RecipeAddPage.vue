@@ -226,7 +226,7 @@ async function save() {
   }
   if (!photoUploader.value) {
     Notify.create({
-      message: 'Something went wrong. Please try again later.',
+      message: 'The photo uploader has not been initialized.',
       color: 'negative',
     });
     throw new Error('The photo uploader has not been initialized.');
@@ -236,7 +236,7 @@ async function save() {
   try {
     const imageFileNames = await uploadPhotos();
     await recipeStore.create({
-      categoryId: selectedCategoryId.value ?? 0,
+      categoryId: selectedCategoryId.value,
       cookingMinutes: cookingMinutes.value,
       description: description.value,
       ingredients: ingredients.value.filter((x) => x),
@@ -258,10 +258,6 @@ async function save() {
     }
   } finally {
     isSaving.value = false;
-    Notify.create({
-      message: 'Something went wrong. Please try again later.',
-      color: 'negative',
-    });
   }
 }
 
