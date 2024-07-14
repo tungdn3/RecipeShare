@@ -77,6 +77,12 @@
               label="Ingredient"
               class="col q-pr-sm q-py-md"
               placeholder="e.g. 1 carrot"
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  (model && model.ingredients.some((x) => x)) ||
+                  'Required',
+              ]"
             />
             <div class="q-pr-sm q-py-md">
               <q-btn
@@ -87,7 +93,7 @@
               />
             </div>
           </div>
-          <div class="row q-pr-sm q-py-md">
+          <div class="row q-pr-sm q-pb-md">
             <q-btn
               color="positive"
               @click="addIngredient"
@@ -100,17 +106,10 @@
       <div>
         <div class="text-h5">Instructions</div>
         <div class="q-pa-sm">
-          <div class="row">
-            <q-input
-              outlined
-              type="textarea"
+          <div class="row q-pr-sm">
+            <InstructionEditor
               v-model="model.instructions"
-              :rules="[
-                (val) => val.length > 0 || 'Required',
-                (val) => val.length <= 2000 || 'Max length 2000',
-              ]"
-              label="Instruction"
-              class="col-12 q-pr-sm q-py-md"
+              class="col-12 q-py-md"
             />
           </div>
         </div>
@@ -182,6 +181,8 @@ import { useCategoryStore } from 'src/stores/category-store';
 import { useMyRecipesStore } from 'src/stores/my-recipes-store';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import InstructionEditor from 'src/components/recipe/InstructionEditor.vue';
+import sanitizeHtml from 'sanitize-html';
 
 defineOptions({
   name: 'RecipeEditPage',
@@ -222,7 +223,7 @@ onMounted(async () => {
     id: id,
     imageFileName: recipe.imageFileName,
     ingredients: recipe.ingredients,
-    instructions: recipe.instructions,
+    instructions: sanitizeHtml(recipe.instructions),
     isPublished: recipe.isPublished,
     preparationMinutes: recipe.preparationMinutes,
     title: recipe.title,
@@ -259,7 +260,6 @@ async function save() {
   if (!model.value || !recipeForm.value) {
     return;
   }
-
   const isValid = await recipeForm.value.validate();
   if (!isValid) {
     Notify.create({
@@ -268,7 +268,6 @@ async function save() {
     });
     throw new Error('The recipe form value is invalid.');
   }
-
   if (!photoUploader.value) {
     Notify.create({
       message: 'Something went wrong. Please try again later.',
@@ -283,6 +282,7 @@ async function save() {
     model.value.imageFileName =
       imageFileNames && imageFileNames[0] ? imageFileNames[0] : null;
     model.value.isPublished = isPublished.value === '1';
+    model.value.instructions = sanitizeHtml(model.value.instructions);
 
     await recipeStore.update(id, model.value);
 

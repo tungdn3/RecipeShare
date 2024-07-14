@@ -2,7 +2,15 @@
   <div class="recipe-card" @click="goToRecipeDetails">
     <q-card>
       <q-img
+        v-if="props.imageUrl"
         :src="props.imageUrl"
+        fit="cover"
+        class="recipe-image"
+        spinner-color="primary"
+      />
+      <q-img
+        v-else
+        src="../../assets/recipe-image-placeholder.jpg"
         fit="cover"
         class="recipe-image"
         spinner-color="primary"
