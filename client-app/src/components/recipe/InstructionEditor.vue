@@ -6,7 +6,10 @@
       label-slot
       borderless
       style="margin-top: -24px; display: none"
-      :rules="[(val) => (!!val && val !== '<br>') || 'Required']"
+      :rules="[
+        (val) => (!!val && val !== '<br>') || 'Required',
+        (val) => val.length <= 10000 || 'Too long',
+      ]"
     >
     </q-field>
     <q-editor
@@ -75,7 +78,8 @@
       class="col text-negative q-mt-md"
       style="padding-left: 12px; font-size: 12px"
     >
-      Required
+      <span v-if="fieldRef.modelValue?.length > 10000">Too long</span>
+      <span v-else>Required</span>
     </div>
   </div>
 </template>
