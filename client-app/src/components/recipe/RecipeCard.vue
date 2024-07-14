@@ -41,14 +41,14 @@
           <div class="col-6 row justify-end">
             <div>
               <q-icon name="favorite" color="secondary" />
-              {{ props.nbOfLikes }}
+              {{ props.nbOfLikes ?? 0 }}
             </div>
 
             <q-separator vertical class="q-mx-sm" />
 
             <div>
               <q-icon name="comment" color="secondary" />
-              {{ props.nbOfComments }}
+              {{ props.nbOfComments ?? 0 }}
             </div>
           </div>
         </div>

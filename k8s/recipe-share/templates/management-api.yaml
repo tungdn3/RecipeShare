@@ -47,6 +47,8 @@ spec:
                 secretKeyRef:
                   name: management-secret
                   key: auth0-client-secret
+            - name: Auth0__Audience
+              value: https://dev-recipe-share.com
       
 # ---
 # apiVersion: v1

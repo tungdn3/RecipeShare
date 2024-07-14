@@ -14,11 +14,11 @@ export interface IRecipeAdd {
   title: string;
   preparationMinutes: number;
   cookingMinutes: number;
-  categoryId: number;
+  categoryId?: number;
   description: string;
   ingredients: string[];
   instructions: string;
-  imageFileName: string | null;
+  imageFileName?: string;
   isPublished: boolean;
 }
 
@@ -27,17 +27,17 @@ export interface IRecipeEdit {
   title: string;
   preparationMinutes: number;
   cookingMinutes: number;
-  categoryId: number;
+  categoryId?: number;
   description: string;
   ingredients: string[];
   instructions: string;
-  imageFileName: string | null;
+  imageFileName?: string;
   isPublished: boolean;
 }
 
 export interface IRecipe {
   id: number;
-  categoryId: number;
+  categoryId?: number;
   categoryName: string;
   title: string;
   description: string;

@@ -40,7 +40,6 @@
               :option-label="(id) => categories.find((x) => x.id == id)?.name"
               :loading="isLoading"
               :disable="isLoading"
-              :rules="[(val) => (val && val > 0) || 'Required']"
               label="Category"
               class="col-12 col-md-4 q-pr-sm q-py-md"
             />
@@ -212,7 +211,7 @@ onMounted(async () => {
   const recipe = await recipeStore.getMyRecipeById(id);
   if (!recipe) {
     Notify.create({
-      message: 'Something went wrong. Please try again later.',
+      message: 'Failed to get the recipe. Please try again later.',
       color: 'negative',
     });
     return;
@@ -271,7 +270,8 @@ async function save() {
   }
   if (!photoUploader.value) {
     Notify.create({
-      message: 'Something went wrong. Please try again later.',
+      message:
+        'The photo uploader has not been initialized. Please try again later.',
       color: 'negative',
     });
     throw new Error('The photo uploader has not been initialized.');
@@ -281,7 +281,7 @@ async function save() {
   try {
     const imageFileNames = await uploadPhotos();
     model.value.imageFileName =
-      imageFileNames && imageFileNames[0] ? imageFileNames[0] : null;
+      imageFileNames && imageFileNames[0] ? imageFileNames[0] : undefined;
     model.value.isPublished = isPublished.value === '1';
     model.value.instructions = sanitizeHtml(model.value.instructions);
 

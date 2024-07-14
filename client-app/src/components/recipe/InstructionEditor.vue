@@ -6,7 +6,10 @@
       label-slot
       borderless
       style="margin-top: -24px; display: none"
-      :rules="[(val) => (!!val && val !== '<br>') || 'Required']"
+      :rules="[
+        (val) => (!!val && val !== '<br>') || 'Required',
+        (val) => val.length <= 10000 || 'Too long',
+      ]"
     >
     </q-field>
     <q-editor
@@ -75,7 +78,8 @@
       class="col text-negative q-mt-md"
       style="padding-left: 12px; font-size: 12px"
     >
-      Required
+      <span v-if="fieldRef.modelValue?.length > 10000">Too long</span>
+      <span v-else>Required</span>
     </div>
   </div>
 </template>
@@ -94,6 +98,7 @@ defineOptions({
   name: 'InstructionEditor',
 });
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 function onPaste(evt: any) {
   if (!editorRef.value) return;
   // Let inputs do their thing, so we don't break pasting of links.
@@ -108,6 +113,7 @@ function onPaste(evt: any) {
     text = evt.clipboardData.getData('text/plain');
     editorRef.value.runCmd('insertText', text);
   } else if (
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     (window as any).clipboardData &&
     (window as any).clipboardData.getData
   ) {

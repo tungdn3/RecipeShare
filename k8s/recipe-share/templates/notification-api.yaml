@@ -36,6 +36,17 @@ spec:
                 secretKeyRef:
                   name: notification-secret
                   key: asb-connection-string
+            - name: Auth0__Domain
+              value: tungdev.au.auth0.com
+            - name: Auth0__Audience
+              value: https://dev-recipe-share.com
+            - name: Auth0__ClientId
+              value: xhG3qBbR9Ht3LHnQyG4V3yE4TAKZF9SX
+            - name: Auth0__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: notification-secret
+                  key: auth0-client-secret
 
 ---
 apiVersion: v1

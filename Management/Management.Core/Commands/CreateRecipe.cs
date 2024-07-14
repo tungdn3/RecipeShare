@@ -70,7 +70,7 @@ public static class CreateRecipe
 
             RuleFor(x => x.Instructions)
                 .NotEmpty()
-                .MaximumLength(2000);
+                .MaximumLength(10_000);
 
             RuleFor(x => x.PreparationMinutes)
                 .GreaterThanOrEqualTo(0);

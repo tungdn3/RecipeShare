@@ -41,13 +41,10 @@ public class CommentsController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("count", Name = "CountRecipesComments")]
-    public IEnumerable<CountDto> CountRecipesComments([FromBody] List<int> ids)
+    public async Task<IEnumerable<CountDto>> CountRecipesComments([FromBody] List<int> recipeIds)
     {
-        return ids.Select(id => new CountDto
-        {
-            Id = id,
-            Count = 10,
-        });
+        List<CountDto> result = await _commentService.CountRecipesComments(recipeIds);
+        return result;
     }
 
     [HttpPost]
