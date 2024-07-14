@@ -41,7 +41,6 @@
               :option-label="(id) => categories.find((x) => x.id == id)?.name"
               :loading="isLoading"
               :disable="isLoading"
-              :rules="[(val) => (val && val > 0) || 'Required']"
               label="Category"
               class="col-12 col-md-4 q-pr-sm q-py-md"
             />
