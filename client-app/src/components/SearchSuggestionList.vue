@@ -1,14 +1,15 @@
 <template>
-  <div class="list">
-    <div
-      class="item"
+  <q-list dense bordered padding class="rounded-borders list">
+    <q-item
+      clickable
+      v-ripple
       v-for="(item, index) in props.items"
       :key="index"
       @click="$emit('selected', item)"
     >
-      {{ item }}
-    </div>
-  </div>
+      <q-item-section> {{ item }} </q-item-section>
+    </q-item>
+  </q-list>
 </template>
 
 <script setup lang="ts">
@@ -19,7 +20,11 @@ const props = defineProps({
 
 <style scoped>
 .list {
-  background-color: lightgray;
+  background-color: rgb(252, 254, 251);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  margin-top: 0;
+  z-index: 1000;
 }
 
 .item {

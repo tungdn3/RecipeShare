@@ -1,12 +1,26 @@
 <template>
   <q-page>
-    <div class="column q-py-lg q-px-md">
-      <q-form @submit="search" class="q-gutter-md">
+    <div class="column q-px-md" style="margin-top: 3rem">
+      <q-form @submit="search">
         <q-input
+          outlined
           debounce="300"
           v-model="searchText"
           label="Search recipes..."
-        />
+          @blur="() => (showSuggestionTexts = false)"
+        >
+          <template v-slot:append>
+            <q-btn
+              type="submit"
+              round
+              color="primary"
+              icon="search"
+              size="sm"
+              @click="search"
+              :disable="!searchText"
+            />
+          </template>
+        </q-input>
         <div id="suggestion-list">
           <SearchSuggestionList
             v-if="showSuggestionTexts"
@@ -16,7 +30,7 @@
         </div>
       </q-form>
 
-      <div v-if="!isSearching" class="row">
+      <div v-if="!isSearching" class="row q-mt-lg">
         <div
           class="col-12 col-sm-6 col-md-4 q-px-sm q-py-md"
           v-for="recipe in recipes"
@@ -37,7 +51,7 @@
         <q-spinner color="primary" size="3em" />
       </div>
     </div>
-    <div class="q-mt-lg q-px-md">
+    <div class="q-mt-lg q-px-md" style="margin-bottom: 3rem">
       <RecipeList />
     </div>
   </q-page>
@@ -65,6 +79,7 @@ const suggestionTexts = ref<string[]>([]);
 const showSuggestionTexts = ref(false);
 let isSuggestionSelected = false;
 const recipes = ref<IRecipeCard[]>([]);
+const suggestionsLoading = ref<boolean>();
 
 watch(searchText, async (newValue) => {
   if (isSuggestionSelected) {
@@ -73,17 +88,24 @@ watch(searchText, async (newValue) => {
   }
   if (!newValue) {
     suggestionTexts.value = [];
+    showSuggestionTexts.value = false;
+    recipes.value = [];
     return;
   }
   suggestionTexts.value = await getAutoComplete(newValue);
-  showSuggestionTexts.value = true;
+  showSuggestionTexts.value = suggestionTexts.value.length > 0;
 });
 
 async function getAutoComplete(searchText: string) {
-  const response = await searchApi.get<string[]>(
-    `complete?query=${searchText}`
-  );
-  return response.data;
+  suggestionsLoading.value = true;
+  try {
+    const response = await searchApi.get<string[]>(
+      `complete?query=${searchText}`
+    );
+    return response.data;
+  } finally {
+    suggestionsLoading.value = false;
+  }
 }
 
 function onSuggestionTextSelected(text: string) {
@@ -139,6 +161,5 @@ async function fillCommentCounts() {
   position: absolute;
   z-index: 1000;
   width: 100%;
-  padding-right: 1rem;
 }
 </style>
