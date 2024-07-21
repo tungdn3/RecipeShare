@@ -4,9 +4,9 @@
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
-        <q-avatar>
+        <!-- <q-avatar>
           <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
-        </q-avatar>
+        </q-avatar> -->
 
         <q-toolbar-title>Recipe Share</q-toolbar-title>
 

@@ -13,9 +13,9 @@ This is a demo of how I build and deploy the microservices approach.
 - [x] OpenAPI supports
 - [ ] CICD with Github actions
 
-### Architecture
+<img src="./doc/images/recipeshare-architecture.jpg" alt="RecipeShare architecture diagram" width="650">
 
-<img src="./doc/images/recipeshare-architecture.jpg" alt="RecipeShare architecture diagram" width="600">
+<img src="./doc/images/recipeshare-home-page.png" alt="RecipeShare home page" width="800">
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
