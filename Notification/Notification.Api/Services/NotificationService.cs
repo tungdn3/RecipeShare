@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Notification.Api.Data;
 using Notification.Api.Data.Entities;
 using Notification.Api.Dtos;
+using Notification.Api.Extensions;
 using Notification.Api.Repositories;
+using Notification.Api.SignalR;
 using Shared.IntegrationEvents;
 
 namespace Notification.Api.Services;
@@ -12,15 +15,21 @@ public class NotificationService
     private readonly ILogger<NotificationService> _logger;
     private readonly UserRepository _userRepository;
     private readonly NotificationDbContext _dbContext;
+    private readonly IHubContext<NotificationHub> _hubContext;
+    private readonly UserUtility _userUtility;
 
     public NotificationService(
         ILogger<NotificationService> logger,
         UserRepository userRepository,
-        NotificationDbContext dbContext)
+        NotificationDbContext dbContext,
+        IHubContext<NotificationHub> hubContext,
+        UserUtility userUtility)
     {
         _logger = logger;
         _userRepository = userRepository;
         _dbContext = dbContext;
+        _hubContext = hubContext;
+        _userUtility = userUtility;
     }
 
     public async Task<PageResultDto<NotificationMessageDto>> GetNotSeenNotifications(int pageNumber, int pageSize, int? lastId = null)
@@ -49,7 +58,7 @@ public class NotificationService
                 ParentCommentId = x.ParentCommentId,
                 RecipeId = x.RecipeId,
                 SeenAt = x.SeenAt,
-                Type = x.Type,
+                Type = x.Type.ToString(),
                 FromUserDisplayName = x.FromUser.DisplayName,
                 FromUserId = x.FromUserId,
                 ToUserId = x.ToUserId,
@@ -93,6 +102,8 @@ public class NotificationService
             return;
         }
 
+        User fromUser = await _userUtility.EnsureUserExist(message.UserId);
+
         var notificationMessage = new NotificationMessage
         {
             IsSeen = false,
@@ -108,6 +119,8 @@ public class NotificationService
 
         _dbContext.NotificationMessages.Add(notificationMessage);
         await _dbContext.SaveChangesAsync();
+
+        await SendNotification(notificationMessage.ToDto(fromUser));
     }
 
     public async Task AddNotification(LikeAdded message)
@@ -120,6 +133,8 @@ public class NotificationService
             _logger.LogWarning("User likes his own recipe. {UserId}, {RecipeId}.", message.UserId, message.RecipeId);
             return;
         }
+
+        User fromUser = await _userUtility.EnsureUserExist(message.UserId);
 
         var notificationMessage = new NotificationMessage
         {
@@ -136,5 +151,16 @@ public class NotificationService
 
         _dbContext.NotificationMessages.Add(notificationMessage);
         await _dbContext.SaveChangesAsync();
+
+        await SendNotification(notificationMessage.ToDto(fromUser));
+    }
+
+    private async Task SendNotification(NotificationMessageDto message)
+    {
+        IClientProxy client = _hubContext.Clients.User(message.ToUserId);
+        if (client != null)
+        {
+            await client.SendAsync("ReceiveMessage", message);
+        }
     }
 }

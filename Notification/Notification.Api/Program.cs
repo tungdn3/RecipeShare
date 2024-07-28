@@ -1,5 +1,6 @@
 using Notification.Api.Data;
 using Notification.Api.Extensions;
+using Notification.Api.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,25 +13,28 @@ builder.Services.AddOpenApi(builder.Configuration);
 builder.Services.AddRecipeAuthentication(builder.Configuration);
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAny", policy => policy
+    string[] clientAppOrigins = builder.Configuration["ClientAppOrigins"]!.Split(";");
+    options.AddPolicy("AllowClientApps", policy => policy
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowAnyOrigin()
+        .WithOrigins(clientAppOrigins)
+        .AllowCredentials()
     );
 });
 builder.Services.AddServices(builder.Configuration, builder.Environment);
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
 app.UseOpenApi(app.Configuration);
 
-app.UseHttpsRedirection();
-
-app.UseCors("AllowAny");
+app.UseCors("AllowClientApps");
 
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapHub<NotificationHub>("/notification/hub");
 
 app.MapControllers();
 

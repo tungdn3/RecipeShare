@@ -9,6 +9,8 @@ using Notification.Api.Repositories;
 using Notification.Api.Services;
 using System.Security.Claims;
 using Shared.Auth0;
+using Microsoft.AspNetCore.SignalR;
+using Notification.Api.SignalR;
 
 namespace Notification.Api.Extensions;
 
@@ -19,6 +21,7 @@ public static class DependencyInjection
         services.AddScoped<NotificationService>();
         services.AddScoped<RecipeService>();
         services.AddScoped<UserRepository>();
+        services.AddScoped<UserUtility>();
         services.AddHttpContextAccessor();
         if (env.IsDevelopment())
         {
@@ -113,8 +116,27 @@ public static class DependencyInjection
                 {
                     NameClaimType = ClaimTypes.NameIdentifier
                 };
+
+                // Sending the access token in the query string is required when SignalR uses WebSockets or ServerSentEvents
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/notification/hub")))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
+        // Change to use Name as the user identifier for SignalR
+        services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
         return services;
     }
 

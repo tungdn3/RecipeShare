@@ -40,5 +40,4 @@ const { recipes, isLoading } = storeToRefs(newRecipesStore);
 onMounted(() => {
   newRecipesStore.getNewRecipes();
 });
-console.log('--------> new recipes', recipes.value);
 </script>

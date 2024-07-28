@@ -49,7 +49,6 @@ import { useRouter } from 'vue-router';
 export default {
   setup() {
     const auth0 = useAuth0();
-    console.log('-------- user', auth0.user);
     const router = useRouter();
 
     function login() {

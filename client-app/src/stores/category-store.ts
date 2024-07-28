@@ -53,11 +53,6 @@ export const useCategoryStore = () => {
   const innerStore = categoryStore();
   if (innerStore.categories.length === 0) {
     innerStore.fetchCategories();
-  } else {
-    console.log(
-      '------- categories exist, no need to fetch',
-      innerStore.categories
-    );
   }
 
   return innerStore;

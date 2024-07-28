@@ -23,7 +23,7 @@
       <q-btn
         size="sm"
         class="q-ml-sm"
-        color="secondary"
+        color="primary"
         :label="isEdit ? 'Save' : 'Comment'"
         :disable="!content"
         @click="$emit('submit', content)"

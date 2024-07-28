@@ -28,18 +28,39 @@ import { useQuasar } from 'quasar';
 import { notificationApi } from 'src/boot/axios';
 import { IPageResult } from 'src/interfaces/Common';
 import { INotification } from 'src/interfaces/Notification';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { useNotificationsStore } from 'src/stores/notifications-store';
+import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 const auth0 = useAuth0();
 const $q = useQuasar();
 const router = useRouter();
+const notificationStore = useNotificationsStore();
 const notificationPage = ref<IPageResult<INotification> | null>(null);
 const items = ref<INotification[]>([]);
 
-let timer = setInterval(() => {
-  getNotifications(1);
-}, 30000);
+watch(notificationStore.notfications, () => {
+  const lastNotification = notificationStore.notfications[0];
+  if (lastNotification) {
+    $q.notify({
+      message: `<strong>${
+        lastNotification.fromUserDisplayName
+      }</strong> ${getAction(lastNotification)}`,
+      html: true,
+      position: 'top-right',
+      actions: [
+        {
+          icon: 'close',
+          color: 'white',
+          round: true,
+          handler: () => {
+            /* ... */
+          },
+        },
+      ],
+    });
+  }
+});
 
 async function getNotifications(pageNumber: number, shouldNotify = true) {
   if (!auth0.isAuthenticated) {
@@ -134,11 +155,5 @@ function notifyLastActivity() {
 
 onMounted(() => {
   getNotifications(1, false);
-});
-
-onUnmounted(() => {
-  if (timer) {
-    clearInterval(timer);
-  }
 });
 </script>

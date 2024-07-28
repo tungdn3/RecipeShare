@@ -7,5 +7,5 @@ export interface INotification {
   parentCommentId: number | undefined | null;
   commentId: number | undefined | null;
   replyId: number | undefined | null;
-  type: 'comment' | 'reply' | 'like';
+  type: 'Comment' | 'Reply' | 'Like';
 }

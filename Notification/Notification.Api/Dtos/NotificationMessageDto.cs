@@ -25,6 +25,5 @@ public class NotificationMessageDto
 
     public string ToUserId { get; set; } = string.Empty;
 
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public NotificationType Type { get; set; }
+    public string Type { get; set; }
 }
