@@ -12,3 +12,13 @@ notificationImage:
 
 clientAppImage:
   tag: latest
+
+dns:
+  resourceGroup: recipe-share
+  subscription: 5f367cd8-598a-494c-a5c7-77cfd1f4e8c6
+  name: recipeshare.website
+
+cluster:
+  identityClientId: 0b610503-4baf-4e1a-be68-001e539f2cde
+
+email: tungdn3@gmail.com

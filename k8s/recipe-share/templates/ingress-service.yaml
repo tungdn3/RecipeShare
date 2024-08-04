@@ -56,4 +56,5 @@ spec:
   - hosts:
     - recipeshare.website
     # secretName: keyvault-ingress-service
-    secretName: ingress-zerossl-cert
+    # secretName: ingress-zerossl-cert
+    secretName: letsencrypt-tls

@@ -1,0 +1,20 @@
+# clusterissuer-lets-encrypt-production.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-production
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: {{ .Values.email }}
+    privateKeySecretRef:
+      name: letsencrypt-production
+    solvers:
+    - dns01:
+        azureDNS:
+          resourceGroupName: {{ .Values.dns.resourceGroup }}
+          subscriptionID: {{ .Values.dns.subscription }}
+          hostedZoneName: {{ .Values.dns.name }}
+          environment: AzurePublicCloud
+          managedIdentity:
+            clientID: {{ .Values.cluster.identityClientId }}

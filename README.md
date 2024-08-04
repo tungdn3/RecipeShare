@@ -10,8 +10,9 @@ This is a demo of how I build and deploy the microservices approach.
 - [x] Domain Driven Design building blocks
 - [x] CQS with MediatR and Fluent Validations
 - [x] Notification with SignalR
-- [x] Deploy to AKS with Heml
 - [x] OpenAPI supports
+- [x] Deploy to AKS with Heml
+- [x] Manage TLS certificates with cert-manager
 - [ ] CICD with Github actions
 
 <img src="./doc/images/recipeshare-architecture.jpg" alt="RecipeShare architecture diagram" width="650">
