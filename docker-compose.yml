@@ -1,62 +1,7 @@
 services:
-  setup:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
-    volumes:
-      - certs:/usr/share/elasticsearch/config/certs
-    user: "0"
-    command: >
-      bash -c '
-        if [ x${ELASTIC_PASSWORD} == x ]; then
-          echo "Set the ELASTIC_PASSWORD environment variable in the .env file";
-          exit 1;
-        elif [ x${KIBANA_PASSWORD} == x ]; then
-          echo "Set the KIBANA_PASSWORD environment variable in the .env file";
-          exit 1;
-        fi;
-        if [ ! -f config/certs/ca.zip ]; then
-          echo "Creating CA";
-          bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
-          unzip config/certs/ca.zip -d config/certs;
-        fi;
-        if [ ! -f config/certs/certs.zip ]; then
-          echo "Creating certs";
-          echo -ne \
-          "instances:\n"\
-          "  - name: es01\n"\
-          "    dns:\n"\
-          "      - es01\n"\
-          "      - localhost\n"\
-          "    ip:\n"\
-          "      - 127.0.0.1\n"\
-          "  - name: kibana\n"\
-          "    dns:\n"\
-          "      - kibana\n"\
-          "      - localhost\n"\
-          "    ip:\n"\
-          "      - 127.0.0.1\n"\
-          > config/certs/instances.yml;
-          bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
-          unzip config/certs/certs.zip -d config/certs;
-        fi;
-        echo "Setting file permissions"
-        chown -R root:root config/certs;
-        find . -type d -exec chmod 750 \{\} \;;
-        find . -type f -exec chmod 640 \{\} \;;
-        echo "Waiting for Elasticsearch availability";
-        until curl -s --cacert config/certs/ca/ca.crt https://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
-        echo "Setting kibana_system password";
-        until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
-        echo "All done!";
-      '
-    healthcheck:
-      test: ["CMD-SHELL", "[ -f config/certs/es01/es01.crt ]"]
-      interval: 1s
-      timeout: 5s
-      retries: 120
-
 
   gateway:
-    image: tungdn3/recipeshare-gateway:0.0.1
+    image: recipeshare-gateway:latest
     build:
       context: .
       dockerfile: Gateway/Dockerfile
@@ -91,7 +36,7 @@ services:
       - POSTGRES_PASSWORD=mysecretpassword
 
   management-api:
-    image: tungdn3/recipeshare-management-api:0.0.6
+    image: recipeshare-management-api:latest
     build:
       context: .
       dockerfile: Management/Management.API/Dockerfile
@@ -109,10 +54,14 @@ services:
       - ConnectionStrings__DbContextPostgres=host=management-db;Port=5432;Database=management;User Id=postgres;Password=mysecretpassword
       - ConnectionStrings__AzureServiceBus=Endpoint=sb://sbns-recipe-share.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=nspiX1EiSMlGkGZGYk+1lUNSMizPfw+0o+ASbJIMRRc=
       - AzureStorage__ConnectionString=DefaultEndpointsProtocol=https;AccountName=recipeshare;AccountKey=4ZqVH7npQIQlEJ/OmJ3Phdeikp28ekVx3AfMbEAwrrBp/9119BtpH0QVKwAfqIWAwknfRrfAE92R+AStBWpYAA==;EndpointSuffix=core.windows.net
+      - Auth0__Domain=tungdev.au.auth0.com
+      - Auth0__Audience=recipe-share-api
+      - Auth0__ClientId=IkHH91DxUzZt3iCwjgtNVFVRvE7hVV5i
+      - Auth0__ClientSecret=Idd2rxQmcdkye1Ky926gZmO0Gge3yjjM8yKGU1YgPOMiARtKmk5OYIKIL7cQoqBs
       
 
   search-api:
-    image: tungdn3/recipeshare-search-api:0.0.6
+    image: recipeshare-search-api:latest
     build:
       context: .
       dockerfile: Search/Search.API/Dockerfile
@@ -133,6 +82,10 @@ services:
       - ElasticSearch__UserName=elastic
       - ElasticSearch__Password=changeme
       - AzureStorage__ConnectionString=DefaultEndpointsProtocol=https;AccountName=recipeshare;AccountKey=4ZqVH7npQIQlEJ/OmJ3Phdeikp28ekVx3AfMbEAwrrBp/9119BtpH0QVKwAfqIWAwknfRrfAE92R+AStBWpYAA==;EndpointSuffix=core.windows.net
+      - Auth0__Domain=tungdev.au.auth0.com
+      - Auth0__Audience=recipe-share-api
+      - Auth0__ClientId=IkHH91DxUzZt3iCwjgtNVFVRvE7hVV5i
+      - Auth0__ClientSecret=Idd2rxQmcdkye1Ky926gZmO0Gge3yjjM8yKGU1YgPOMiARtKmk5OYIKIL7cQoqBs
 
 
   notification-db:
@@ -149,7 +102,7 @@ services:
       - POSTGRES_PASSWORD=mysecretpassword
 
   notification-api:
-    image: tungdn3/recipeshare-notification-api:0.0.1
+    image: recipeshare-notification-api:latest
     build:
       context: .
       dockerfile: Notification/Notification.Api/Dockerfile
@@ -166,6 +119,11 @@ services:
       - ASPNETCORE_HTTP_PORTS=8080
       - ConnectionStrings__DbContextPostgres=host=notification-db;Port=5432;Database=notification;User Id=postgres;Password=mysecretpassword
       - ConnectionStrings__AzureServiceBus=Endpoint=sb://sbns-recipe-share.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=nspiX1EiSMlGkGZGYk+1lUNSMizPfw+0o+ASbJIMRRc=
+      - ClientAppOrigins=http://localhost:9000
+      - Auth0__Domain=tungdev.au.auth0.com
+      - Auth0__Audience=recipe-share-api
+      - Auth0__ClientId=IkHH91DxUzZt3iCwjgtNVFVRvE7hVV5i
+      - Auth0__ClientSecret=Idd2rxQmcdkye1Ky926gZmO0Gge3yjjM8yKGU1YgPOMiARtKmk5OYIKIL7cQoqBs
       
 
   social-db:
@@ -182,7 +140,7 @@ services:
       - POSTGRES_PASSWORD=mysecretpassword
 
   social-api:
-    image: tungdn3/recipeshare-social-api:0.0.1
+    image: recipeshare-social-api:latest
     build:
       context: .
       dockerfile: Social/Social.API/Dockerfile
@@ -200,18 +158,21 @@ services:
       - ConnectionStrings__DbContextPostgres=host=social-db;Port=5432;Database=social;User Id=postgres;Password=mysecretpassword
       - ConnectionStrings__AzureServiceBus=Endpoint=sb://sbns-recipe-share.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=nspiX1EiSMlGkGZGYk+1lUNSMizPfw+0o+ASbJIMRRc=
       - Auth0__Domain=tungdev.au.auth0.com
-      - Auth0__Audience=https://dev-recipe-share.com
-      - Auth0__ClientId=xhG3qBbR9Ht3LHnQyG4V3yE4TAKZF9SX
-      - Auth0__ClientSecret=fWB2TFOXNL6slW0Dx-Aedn4jFliMPNvL0pnlH2-a4Rn10cbTnSFdmhnfelcHut3f
+      - Auth0__Audience=recipe-share-api
+      - Auth0__ClientId=IkHH91DxUzZt3iCwjgtNVFVRvE7hVV5i
+      - Auth0__ClientSecret=Idd2rxQmcdkye1Ky926gZmO0Gge3yjjM8yKGU1YgPOMiARtKmk5OYIKIL7cQoqBs
 
 
   client-app:
-    image: tungdn3/recipeshare-client-app:0.0.10
+    image: recipeshare-client-app:latest
     build:
       context: ./client-app
       dockerfile: Dockerfile
       args:
         - QUASAR_GATEWAY_BASE_URL=http://localhost:7000
+        - QUASAR_AUTH0_DOMAIN=tungdev.au.auth0.com
+        - QUASAR_AUTH0_CLIENT_ID=h9uK0ZL5HZAZJjKYdYVEXkq3S6mtRUrR
+        - QUASAR_AUTH0_AUDIENCE=recipe-share-api
     container_name: client-app-dev
     ports:
       - 9000:80
@@ -222,9 +183,6 @@ services:
 
 
   es01:
-    depends_on:
-      setup:
-        condition: service_healthy
     image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
     labels:
       co.elastic.logs/module: elasticsearch
